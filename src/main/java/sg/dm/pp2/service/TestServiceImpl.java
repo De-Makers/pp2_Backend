@@ -4,9 +4,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sg.dm.pp2.entity.Test;
+import sg.dm.pp2.entity.UnivInfo;
 import sg.dm.pp2.repository.TestRepository;
+import sg.dm.pp2.repository.UnivInfoRepository;
 import sg.dm.pp2.service.vo.TestVO;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -14,6 +17,8 @@ import java.util.Optional;
 public class TestServiceImpl implements TestService{
     @Autowired
     private TestRepository testRepository;
+    @Autowired
+    private UnivInfoRepository univInfoRepository;
 
 
     @Override
@@ -30,4 +35,8 @@ public class TestServiceImpl implements TestService{
         }
     }
 
+    @Override
+    public List<UnivInfo> getUnivInfoList() {
+        return univInfoRepository.findAll();
+    }
 }
