@@ -28,5 +28,4 @@ public class Pp2Controller {
     public List<UnivInfo> getSchoolList() {
         return testService.getUnivInfoList();
     }
-    // lalala
 }
