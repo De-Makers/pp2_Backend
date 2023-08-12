@@ -2,14 +2,14 @@ package sg.dm.pp2.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import sg.dm.pp2.controller.dto.GetUnivEmailDomainQueryDTO;
 import sg.dm.pp2.controller.dto.TestDTO;
 import sg.dm.pp2.entity.UnivInfo;
 import sg.dm.pp2.service.TestService;
+import sg.dm.pp2.service.email.EmailQueryService;
 import sg.dm.pp2.service.vo.TestVO;
+import sg.dm.pp2.service.vo.UnivEmailDomainDetailVO;
 
 import java.util.List;
 
@@ -18,6 +18,7 @@ import java.util.List;
 public class Pp2Controller {
     @Autowired
     private TestService testService;
+    @Autowired EmailQueryService emailQueryService;
 
     @PostMapping("/getname")
     public TestVO getName(@RequestBody TestDTO testDTO){
@@ -27,5 +28,10 @@ public class Pp2Controller {
     @GetMapping("/school/list")
     public List<UnivInfo> getSchoolList() {
         return testService.getUnivInfoList();
+    }
+
+    @GetMapping("/school/email-domain")
+    public List<UnivEmailDomainDetailVO> getUnivEmailDomain(@ModelAttribute GetUnivEmailDomainQueryDTO getUnivEmailDomainQueryDTO){
+        return emailQueryService.getUnivEmailDomainList(getUnivEmailDomainQueryDTO);
     }
 }
