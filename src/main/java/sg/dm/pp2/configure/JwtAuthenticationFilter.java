@@ -41,15 +41,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         //Authorization
 
         String requestHeader = request.getHeader("Authorization");
-        //Bearer 2352345235sdfrsfgsdfsdf
         logger.info(" Header :  {}", requestHeader);
-        String username = null;
+        String userUidInToken = null;
         String token = null;
         if (requestHeader != null && requestHeader.startsWith("Bearer")) {
             token = requestHeader.substring(7);
             try {
 
-                username = this.jwtHelper.getUsernameFromToken(token);
+                userUidInToken = this.jwtHelper.getUsernameFromToken(token);
+                logger.info(" userUid in token :  {}", userUidInToken);
 
             } catch (IllegalArgumentException e) {
                 logger.info("Illegal Argument while fetching the username !!");
@@ -71,13 +71,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         //
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (userUidInToken != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
             //fetch user detail from username
-            Boolean validateToken = this.jwtHelper.validateToken(token, username);
+            Boolean validateToken = this.jwtHelper.validateToken(token, userUidInToken);
             if (validateToken) {
                 //set the authentication
-                UserDetailsImpl userDetails = userDetailsServiceImpl.loadUserByUserUid(Integer.getInteger(username));
+                UserDetailsImpl userDetails = userDetailsServiceImpl.loadUserByUserUid(Integer.parseInt(userUidInToken));
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);

@@ -11,14 +11,20 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @Getter
 @Setter
-@Table(name="univ_info")
+@Table(name="sns_login")
 @Entity
 @SuperBuilder
-public class UnivInfo {
+public class SnsLogin {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int univUid;
+    int userUid;
 
     @Column
-    String univName;
+    int platformUid;
+
+    @Column
+    String snsAccountUid;
+
+    @Column
+    String token;
 }

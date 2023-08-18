@@ -2,8 +2,6 @@ package sg.dm.pp2.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import sg.dm.pp2.configure.JwtHelper;
 import sg.dm.pp2.entity.Test;

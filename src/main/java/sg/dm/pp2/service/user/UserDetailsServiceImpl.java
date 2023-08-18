@@ -5,18 +5,19 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import sg.dm.pp2.entity.SnsLogin;
 import sg.dm.pp2.entity.impl.UserDetailsImpl;
+import sg.dm.pp2.repository.SnsLoginRepository;
 
 @Service
 @RequiredArgsConstructor
 // userDetailsImple에 account를 넣어주는 서비스입니다.
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final UserRepository accountRepository; // TODO: UserRepo
+    private final SnsLoginRepository snsLoginRepository;
 
     public UserDetailsImpl loadUserByUserUid(Integer userUid) throws UsernameNotFoundException {
-
-        Account account = accountRepository.findByNickname(nickname).orElseThrow( // TODO: UserRepo
+        SnsLogin snsLogin = snsLoginRepository.findByUserUid(userUid).orElseThrow(
                 () -> new RuntimeException("Not Found Account")
         );
 
