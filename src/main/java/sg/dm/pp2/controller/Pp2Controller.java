@@ -34,4 +34,9 @@ public class Pp2Controller {
     public List<UnivEmailDomainDetailVO> getUnivEmailDomain(@ModelAttribute GetUnivEmailDomainQueryDTO getUnivEmailDomainQueryDTO){
         return emailQueryService.getUnivEmailDomainList(getUnivEmailDomainQueryDTO);
     }
+
+    @PostMapping("/auth/signup")
+    public String postSignUpAndReturnToken(@RequestHeader Integer userUid) {
+        return testService.tokenTestService(userUid);
+    }
 }

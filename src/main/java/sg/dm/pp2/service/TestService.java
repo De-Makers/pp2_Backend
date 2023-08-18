@@ -8,5 +8,7 @@ import java.util.List;
 public interface TestService {
     TestVO testService(Long id);
 
+    String tokenTestService(Integer userUid);
+
     List<UnivInfo> getUnivInfoList();
 }

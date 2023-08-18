@@ -3,6 +3,7 @@ package sg.dm.pp2.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import sg.dm.pp2.configure.JwtHelper;
 import sg.dm.pp2.entity.Test;
 import sg.dm.pp2.entity.UnivInfo;
 import sg.dm.pp2.repository.TestRepository;
@@ -20,6 +21,9 @@ public class TestServiceImpl implements TestService{
     @Autowired
     private UnivInfoRepository univInfoRepository;
 
+    @Autowired
+    private JwtHelper jwtHelper;
+
 
     @Override
     public TestVO testService(Long id) {
@@ -33,6 +37,11 @@ public class TestServiceImpl implements TestService{
                     .testName("not exist")
                     .build();
         }
+    }
+
+    @Override
+    public String tokenTestService(Integer userUid) {
+        return jwtHelper.generateTokenByUserUid(userUid);
     }
 
     @Override

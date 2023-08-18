@@ -11,11 +11,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import sg.dm.pp2.entity.impl.UserDetailsImpl;
+import sg.dm.pp2.service.user.UserDetailsServiceImpl;
 
 import java.io.IOException;
 
@@ -28,7 +28,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
     @Autowired
-    private UserDetailsService userDetailsService;
+    private UserDetailsServiceImpl userDetailsServiceImpl;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -39,18 +39,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 //            throw new RuntimeException(e);
 //        }
         //Authorization
-
         String requestHeader = request.getHeader("Authorization");
-        //Bearer 2352345235sdfrsfgsdfsdf
-        logger.info(" Header :  {}", requestHeader);
-        String username = null;
+        String userUidInToken = null;
         String token = null;
         if (requestHeader != null && requestHeader.startsWith("Bearer")) {
-            //looking good
             token = requestHeader.substring(7);
             try {
 
-                username = this.jwtHelper.getUsernameFromToken(token);
+                userUidInToken = this.jwtHelper.getUsernameFromToken(token);
+                logger.info(" userUid in token :  {}", userUidInToken);
 
             } catch (IllegalArgumentException e) {
                 logger.info("Illegal Argument while fetching the username !!");
@@ -63,39 +60,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 e.printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();
-
             }
-
-
         } else {
-            logger.info("Invalid Header Value !! ");
+//            logger.info("Invalid Header Value !! ");
         }
 
-
         //
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-
+        if (userUidInToken != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
             //fetch user detail from username
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-            Boolean validateToken = this.jwtHelper.validateToken(token, userDetails);
+            Boolean validateToken = this.jwtHelper.validateToken(token, userUidInToken);
             if (validateToken) {
-
                 //set the authentication
+                UserDetailsImpl userDetails = userDetailsServiceImpl.loadUserByUserUid(Integer.parseInt(userUidInToken));
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-
-
             } else {
                 logger.info("Validation fails !!");
             }
 
-
         }
 
         filterChain.doFilter(request, response);
-
-
     }
 }
