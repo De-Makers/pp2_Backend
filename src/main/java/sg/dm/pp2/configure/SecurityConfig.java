@@ -20,7 +20,7 @@ public class SecurityConfig {
 
         http.csrf(csrf -> csrf.disable())
                 .authorizeRequests().
-                requestMatchers("/auth/**").permitAll() // 회원가입 / 로그인 api 로 변경
+                requestMatchers("/**").permitAll() // 회원가입 / 로그인 api 로 변경
                 .anyRequest()
                 .authenticated()
                 .and().exceptionHandling(ex -> ex.authenticationEntryPoint(point))

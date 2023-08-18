@@ -39,9 +39,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 //            throw new RuntimeException(e);
 //        }
         //Authorization
-
         String requestHeader = request.getHeader("Authorization");
-        logger.info(" Header :  {}", requestHeader);
         String userUidInToken = null;
         String token = null;
         if (requestHeader != null && requestHeader.startsWith("Bearer")) {
@@ -62,12 +60,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 e.printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();
-
             }
-
-
         } else {
-            logger.info("Invalid Header Value !! ");
+//            logger.info("Invalid Header Value !! ");
         }
 
         //
