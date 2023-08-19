@@ -31,10 +31,9 @@ dependencies {
 	implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
 	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
 	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
-
-	// swagger
-	implementation 'io.springfox:springfox-swagger2:2.10.5'
-	implementation 'io.springfox:springfox-swagger-ui:2.10.5'
+//	// swagger
+//	implementation 'io.springfox:springfox-swagger2:2.10.5'
+//	implementation 'io.springfox:springfox-swagger-ui:2.10.5'
 }
 
 tasks.named('test') {

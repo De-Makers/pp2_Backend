@@ -2,6 +2,8 @@ package sg.dm.pp2.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import sg.dm.pp2.controller.dto.GetUnivEmailDomainQueryDTO;
 import sg.dm.pp2.controller.dto.TestDTO;
@@ -38,5 +40,10 @@ public class Pp2Controller {
     @PostMapping("/auth/signup")
     public String postSignUpAndReturnToken(@RequestHeader Integer userUid) {
         return testService.tokenTestService(userUid);
+    }
+
+    @GetMapping("/test/user-from-token")
+    public String getUserUidFromToken(@RequestHeader("Authorization") String token) {
+        return testService.tokenToUserUidTestService(token.substring(7));
     }
 }

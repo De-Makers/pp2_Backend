@@ -45,6 +45,11 @@ public class TestServiceImpl implements TestService{
     }
 
     @Override
+    public String tokenToUserUidTestService(String token) {
+        return jwtHelper.getUserUidFromToken(token);
+    }
+
+    @Override
     public List<UnivInfo> getUnivInfoList() {
         return univInfoRepository.findAll();
     }
