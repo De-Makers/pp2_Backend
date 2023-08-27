@@ -14,8 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@Slf4j
-public class TestServiceImpl implements TestService{
+public class tokenServiceImpl implements TokenService {
     @Autowired
     private TestRepository testRepository;
     @Autowired
@@ -45,7 +44,7 @@ public class TestServiceImpl implements TestService{
     }
 
     @Override
-    public String tokenToUserUidTestService(String token) {
+    public String tokenToUserUidStringService(String token) {
         return jwtHelper.getUserUidFromToken(token);
     }
 

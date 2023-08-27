@@ -1,5 +1,6 @@
 package sg.dm.pp2.entity;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -42,9 +43,6 @@ public class StudentInfo {
 
     @Column
     private String authCode;
-
-    @Column(columnDefinition = "TINYINT(1)")
-    private Boolean certified;
 
     @Column
     private String studentCardImage;
