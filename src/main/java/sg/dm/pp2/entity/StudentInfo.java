@@ -14,7 +14,6 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class StudentInfo {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userUid;
 
     @Column

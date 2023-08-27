@@ -7,7 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import sg.dm.pp2.controller.dto.EmailAuthCodeCommandDTO;
+import sg.dm.pp2.entity.StudentInfo;
 import sg.dm.pp2.entity.UnivEmailDomain;
+import sg.dm.pp2.exception.DomainException;
+import sg.dm.pp2.repository.StudentInfoRepository;
 import sg.dm.pp2.repository.UnivEmailDomainRepository;
 
 import java.util.Objects;
@@ -15,20 +18,22 @@ import java.util.Optional;
 
 @Service
 @Slf4j
-public class EmailAuthCodeServiceImpl implements EmailAuthCodeService{
+public class EmailAuthCodeServiceImpl implements EmailAuthCodeService {
 
     @Autowired
     private JavaMailSender javaMailSender;
     @Autowired
     private UnivEmailDomainRepository univEmailDomainRepository;
+    @Autowired
+    private StudentInfoRepository studentInfoRepository;
     private static final String senderEmail = "";  //보내는 사람 이메일
     private static int number;
 
-    public static void createNumber(){
-        number = (int)(Math.random() * (90000)) + 100000;// (int) Math.random() * (최댓값-최소값+1) + 최소값
+    public static void createNumber() {
+        number = (int) (Math.random() * (899999)) + 100000;// (int) Math.random() * (최댓값-최소값+1) + 최소값
     }
 
-    public MimeMessage CreateMail(String mail){
+    public MimeMessage CreateMail(String mail) {
         createNumber();
         MimeMessage message = javaMailSender.createMimeMessage();
 
@@ -49,7 +54,7 @@ public class EmailAuthCodeServiceImpl implements EmailAuthCodeService{
             msgg += "CODE : <strong>";
             msgg += number + "</strong><div><br/> "; // 메일에 인증번호 넣기
             msgg += "</div>";
-            message.setText(msgg,"UTF-8", "html");
+            message.setText(msgg, "UTF-8", "html");
         } catch (MessagingException e) {
             e.printStackTrace();
         }
@@ -58,43 +63,44 @@ public class EmailAuthCodeServiceImpl implements EmailAuthCodeService{
     }
 
     @Override
-    public void sendMail(EmailAuthCodeCommandDTO emailAuthCodeCommandDTO){
+    public void sendMail(EmailAuthCodeCommandDTO emailAuthCodeCommandDTO, int userUid) {
         String email = emailAuthCodeCommandDTO.getEmail();
         String parsedDomain = "";
-        boolean findFlag = true;
-        int count=0;
+        int count = email.indexOf('@');
 
-        while(email.charAt(count) != '@'){
-            if(count > email.length()){
-                findFlag = false;
-                break;
-            }
-            count++;
-        }
-
-        if(findFlag){
-            parsedDomain = email.substring(count+1);
+        if (count != -1) {
+            parsedDomain = email.substring(count + 1);
             Optional<UnivEmailDomain> domainOptional = univEmailDomainRepository.findByDomainUid(emailAuthCodeCommandDTO.getDomainUid());
+            Optional<StudentInfo> studentInfoOptional = studentInfoRepository.findByUserUid(userUid);
 
-            if(domainOptional.isPresent()){
+            if (domainOptional.isPresent()) {
                 String domain = domainOptional.get().getDomain();
-                if(Objects.equals(parsedDomain, domain)){
+                if (Objects.equals(parsedDomain, domain)) {
                     MimeMessage message = CreateMail(emailAuthCodeCommandDTO.getEmail());
-                    javaMailSender.send(message);
-                }
-                else{
+                    StudentInfo studentInfo;
+                    if(studentInfoOptional.isPresent()){
+                        studentInfo = studentInfoOptional.get();
+                        studentInfo.setAuthCode(String.valueOf(number));
+                        studentInfoRepository.save(studentInfo);
+                        javaMailSender.send(message);
+                    }
+                    else{
+                        throw new DomainException("user_uid로 DB에서 student를 찾지 못함");
+                    }
+
+                } else {
                     //(domain_uid로 찾은)디비에 저장된 domain과 맞지 않음
+                    throw new DomainException("(domain_uid로 찾은)디비에 저장된 domain과 맞지 않음");
                 }
 
-            }
-            else{
+            } else {
                 //domain_uid로 domain을 찾지 못함
+                throw new DomainException("domain_uid로 domain을 찾지 못함");
             }
-        }
-        else{
+        } else {
             //이메일 양식 오류(이메일에 @가 없음)
+            throw new DomainException("이메일 양식 오류(이메일에 @가 없음)");
         }
-
 
 
     }
