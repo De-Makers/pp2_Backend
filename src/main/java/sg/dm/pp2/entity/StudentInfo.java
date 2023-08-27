@@ -16,7 +16,6 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class StudentInfo {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userUid;
 
     @Column
@@ -42,9 +41,6 @@ public class StudentInfo {
 
     @Column
     private String authCode;
-
-    @Column(columnDefinition = "TINYINT(1)")
-    private Boolean certified;
 
     @Column
     private String studentCardImage;

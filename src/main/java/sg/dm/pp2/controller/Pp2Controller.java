@@ -1,5 +1,6 @@
 package sg.dm.pp2.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,12 +28,12 @@ public class Pp2Controller {
         return testService.testService(Long.parseLong(testDTO.getId()));
     }
 
-    @GetMapping("/school/list")
+    @GetMapping("/pp/school")
     public List<UnivInfo> getSchoolList() {
         return testService.getUnivInfoList();
     }
 
-    @GetMapping("/school/email-domain")
+    @GetMapping("/pp/school/email-domain")
     public List<UnivEmailDomainDetailVO> getUnivEmailDomain(@ModelAttribute GetUnivEmailDomainQueryDTO getUnivEmailDomainQueryDTO){
         return emailQueryService.getUnivEmailDomainList(getUnivEmailDomainQueryDTO);
     }
