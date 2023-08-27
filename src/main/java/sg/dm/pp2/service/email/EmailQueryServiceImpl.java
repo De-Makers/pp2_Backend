@@ -24,13 +24,13 @@ public class EmailQueryServiceImpl implements EmailQueryService{
     private UnivInfoRepository univInfoRepository;
 
     @Override
-    public List<UnivEmailDomainDetailVO> getUnivEmailDomainList(GetUnivEmailDomainQueryDTO getUnivEmailDomainQueryDTO) {
+    public List<UnivEmailDomainDetailVO> getUnivEmailDomainList(int univUid) {
 
-        Optional<UnivInfo> univInfoOptional = univInfoRepository.findByUnivUid(getUnivEmailDomainQueryDTO.getUnivId());
+        Optional<UnivInfo> univInfoOptional = univInfoRepository.findByUnivUid(univUid);
 
         if (univInfoOptional.isPresent()) {
 
-            List<UnivEmailDomain> domains = univEmailDomainRepository.findAllByUnivUid(getUnivEmailDomainQueryDTO.getUnivId());
+            List<UnivEmailDomain> domains = univEmailDomainRepository.findAllByUnivUid(univUid);
 
             List<UnivEmailDomainDetailVO> univEmailDomainDetailVO = domains.stream().map(x -> UnivEmailDomainDetailVO.builder()
                             .domainUid(x.getDomainUid())

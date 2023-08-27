@@ -10,6 +10,7 @@ import sg.dm.pp2.controller.dto.EmailAuthCodeCommandDTO;
 import sg.dm.pp2.entity.StudentInfo;
 import sg.dm.pp2.entity.UnivEmailDomain;
 import sg.dm.pp2.exception.DomainException;
+import sg.dm.pp2.exception.UserNotFoundException;
 import sg.dm.pp2.repository.StudentInfoRepository;
 import sg.dm.pp2.repository.UnivEmailDomainRepository;
 
@@ -101,7 +102,29 @@ public class EmailAuthCodeServiceImpl implements EmailAuthCodeService {
             //이메일 양식 오류(이메일에 @가 없음)
             throw new DomainException("이메일 양식 오류(이메일에 @가 없음)");
         }
+    }
 
+    @Override
+    public void checkAuthCode(String code, int userUid){
+        Optional<StudentInfo> studentInfoOptional = studentInfoRepository.findByUserUid(userUid);
+
+        if(studentInfoOptional.isPresent()){
+            String answerCode = studentInfoOptional.get().getAuthCode();
+            if(Objects.equals(answerCode, code)) {
+                log.info("AuthCode Success");
+            }
+            else{
+                //인증코드가 맞지 않음
+//                log.info("Fail1");
+                throw new UserNotFoundException("WRONG_AUTH_CODE");
+
+            }
+        }
+        else{
+            //user_uid로 student 찾을 수 없음. UserDetailsServiceImpl에서 USER NOT FOUND로 앞에서 걸러짐
+//            log.info("Fail2");
+            throw new UserNotFoundException("USER_ID_NOT_FOUND");
+        }
 
     }
 }
