@@ -22,7 +22,7 @@ public class StudentServiceImpl implements StudentService {
             String name,
             String message
     ) {
-        StudentInfo studentInfo = studentInfoRepository.findByUserUid(userUid);
+        StudentInfo studentInfo = studentInfoRepository.findByUserUid(userUid).get();
         StudentIdUtil.YearAndPivot yearAndPivot = studentIdUtil.getYearAndPivotFromStudentIdAndUnivUid(studentId, studentInfo.getUnivUid());
         String studentIdPivot = yearAndPivot.getPivot();
         Integer studentIdYear = yearAndPivot.getYear();
