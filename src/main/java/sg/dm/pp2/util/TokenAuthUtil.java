@@ -10,10 +10,10 @@ public class TokenAuthUtil {
     TokenService tokenService;
 
     public Integer checkFullBearerUserTokenAndReturnUserUid(String token) {
-        return Integer.getInteger(tokenService.tokenToUserUidStringService(token.substring(7)));
+        return Integer.parseInt(tokenService.tokenToUserUidStringService(token.substring(7)));
     }
 
     public Integer checkUserTokenWithoutSubstringAndReturnUserUid(String token) {
-        return Integer.getInteger(tokenService.tokenToUserUidStringService(token));
+        return Integer.parseInt(tokenService.tokenToUserUidStringService(token));
     }
 }

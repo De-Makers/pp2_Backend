@@ -9,10 +9,11 @@ import sg.dm.pp2.entity.StudentInfo;
 
 @Repository
 public interface StudentInfoRepository extends JpaRepository<StudentInfo, Integer> {
-    public Integer getUnivUidByUserUid(
+    StudentInfo findByUserUid(
             Integer userUid
     );
 
+    @Transactional
     @Modifying
     @Query("UPDATE StudentInfo s " +
             "SET s.studentId = :studentId, " +

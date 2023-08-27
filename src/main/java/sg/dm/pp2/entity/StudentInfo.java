@@ -2,10 +2,7 @@ package sg.dm.pp2.entity;
 
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 @NoArgsConstructor
@@ -23,27 +20,27 @@ public class StudentInfo {
     @Column
     private int univUid;
 
-    @Column
+    @Column(nullable = true)
     private String name;
 
-    @Column
+    @Column(nullable = true)
     private String studentId;
 
-    @Column
-    private int studentIdYear;
+    @Column(nullable = true)
+    private Integer studentIdYear;
 
-    @Column
+    @Column(nullable = true)
     private String studentIdPivot;
 
-    @Column
+    @Column(nullable = true)
     private String studentEmail;
 
-    @Column
+    @Column(nullable = true)
     private String message;
 
-    @Column
+    @Column(nullable = true)
     private String authCode;
 
-    @Column
+    @Column(nullable = true)
     private String studentCardImage;
 }
