@@ -5,10 +5,10 @@ import sg.dm.pp2.service.vo.TestVO;
 
 import java.util.List;
 
-public interface TestService {
+public interface TokenService {
     TestVO testService(Long id);
 
-    String tokenToUserUidTestService(String token);
+    String tokenToUserUidStringService(String token);
 
     String tokenTestService(Integer userUid);
 
