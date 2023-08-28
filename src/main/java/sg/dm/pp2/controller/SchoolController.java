@@ -9,6 +9,7 @@ import sg.dm.pp2.service.TokenService;
 import sg.dm.pp2.service.email.EmailAuthCodeService;
 import sg.dm.pp2.service.email.EmailQueryService;
 import sg.dm.pp2.service.vo.UnivEmailDomainDetailVO;
+import sg.dm.pp2.service.vo.UnivInfoVO;
 import sg.dm.pp2.util.TokenAuthUtil;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public class SchoolController {
 
 
     @GetMapping("/pp/school")
-    public List<UnivInfo> getSchoolList() {
+    public List<UnivInfoVO> getSchoolList() {
         return tokenService.getUnivInfoList();
     }
 
