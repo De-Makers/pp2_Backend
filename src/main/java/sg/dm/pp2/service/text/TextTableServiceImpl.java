@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sg.dm.pp2.entity.TextTable;
-import sg.dm.pp2.exception.UserNotFoundException;
+import sg.dm.pp2.exception.NotFoundException;
 import sg.dm.pp2.repository.TextTableRepository;
 import sg.dm.pp2.service.vo.TextTableVO;
 
@@ -27,7 +27,7 @@ public class TextTableServiceImpl implements TextTableService{
         }
         else{
             log.info(textUid);
-            throw new UserNotFoundException("TEXT_NOT_FOUND");
+            throw new NotFoundException("TEXT_NOT_FOUND");
         }
     }
 }

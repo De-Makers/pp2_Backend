@@ -17,4 +17,6 @@ public interface StudentService {
 
     List<ProfileListVO> getFamilyProfileList(int userUid);
 
+    ProfileListVO  getSomeoneProfile(int userUid);
+
 }

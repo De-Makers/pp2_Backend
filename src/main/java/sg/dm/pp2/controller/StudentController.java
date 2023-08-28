@@ -14,10 +14,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StudentController {
     @Autowired
-    StudentService studentService;
+    private StudentService studentService;
 
     @Autowired
-    TokenAuthUtil tokenAuthUtil;
+    private TokenAuthUtil tokenAuthUtil;
 
     @PostMapping("/pp/profile")
     public void postUserProfile(
@@ -52,5 +52,10 @@ public class StudentController {
     public List<ProfileListVO> getFamilyProfileList(@RequestHeader ("Authorization") String token){
         Integer userUid = tokenAuthUtil.checkFullBearerUserTokenAndReturnUserUid(token);
         return studentService.getFamilyProfileList(userUid);
+    }
+
+    @GetMapping("/pp/profile/{user_uid}")
+    public ProfileListVO getSomeoneProfile(@PathVariable(value = "user_uid") int userUid){
+        return studentService.getSomeoneProfile(userUid);
     }
 }

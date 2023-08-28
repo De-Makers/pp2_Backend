@@ -10,7 +10,7 @@ import sg.dm.pp2.controller.dto.EmailAuthCodeCommandDTO;
 import sg.dm.pp2.entity.StudentInfo;
 import sg.dm.pp2.entity.UnivEmailDomain;
 import sg.dm.pp2.exception.DomainException;
-import sg.dm.pp2.exception.UserNotFoundException;
+import sg.dm.pp2.exception.NotFoundException;
 import sg.dm.pp2.repository.StudentInfoRepository;
 import sg.dm.pp2.repository.UnivEmailDomainRepository;
 
@@ -116,14 +116,14 @@ public class EmailAuthCodeServiceImpl implements EmailAuthCodeService {
             else{
                 //인증코드가 맞지 않음
 //                log.info("Fail1");
-                throw new UserNotFoundException("WRONG_AUTH_CODE");
+                throw new NotFoundException("WRONG_AUTH_CODE");
 
             }
         }
         else{
             //user_uid로 student 찾을 수 없음. UserDetailsServiceImpl에서 USER NOT FOUND로 앞에서 걸러짐
 //            log.info("Fail2");
-            throw new UserNotFoundException("USER_ID_NOT_FOUND");
+            throw new NotFoundException("USER_ID_NOT_FOUND");
         }
 
     }

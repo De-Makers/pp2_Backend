@@ -13,10 +13,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ProfileListVO {
-    private int userUid;
+    private Integer userUid;
     private String name;
     private String studentId;
-    private int studentIdYear;
+    private Integer studentIdYear;
     private String studentIdPivot;
     private String message;
 }

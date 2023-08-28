@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sg.dm.pp2.entity.PpRegisterState;
-import sg.dm.pp2.exception.UserNotFoundException;
+import sg.dm.pp2.exception.NotFoundException;
 import sg.dm.pp2.repository.PpRegisterStateRepository;
 import sg.dm.pp2.service.vo.RegisterStateVO;
 
@@ -28,7 +28,7 @@ public class PpRegisterStateServiceImpl implements PpRegisterStateService{
         }
         else{
             //user_uid가 pp_reg_state 테이블에 없음
-            throw new UserNotFoundException("USER_NOT_FOUND");
+            throw new NotFoundException("USER_NOT_FOUND");
         }
     }
 }

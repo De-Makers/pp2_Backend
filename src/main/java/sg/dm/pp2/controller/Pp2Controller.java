@@ -31,7 +31,7 @@ public class Pp2Controller {
     @Autowired
     private PpRegisterStateService ppRegisterStateService;
     @Autowired
-    TokenAuthUtil tokenAuthUtil;
+    private TokenAuthUtil tokenAuthUtil;
 
     @PostMapping("/getname")
     public TestVO getName(@RequestBody TestDTO testDTO){
@@ -48,8 +48,8 @@ public class Pp2Controller {
         return tokenService.tokenToUserUidStringService(token.substring(7));
     }
 
-    @GetMapping("/public/text/{textUid}")
-    public TextTableVO getText(@PathVariable String textUid){
+    @GetMapping("/public/text/{text_uid}")
+    public TextTableVO getText(@PathVariable(value = "text_Uid") String textUid){
         return textTableService.getText(textUid);
     }
 

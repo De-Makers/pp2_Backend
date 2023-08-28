@@ -13,5 +13,5 @@ import lombok.NoArgsConstructor;
 @Builder
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class RegisterStateVO {
-    private int stateId;
+    private Integer stateId;
 }
