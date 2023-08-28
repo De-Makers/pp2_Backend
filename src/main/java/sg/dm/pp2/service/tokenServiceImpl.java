@@ -9,9 +9,12 @@ import sg.dm.pp2.entity.UnivInfo;
 import sg.dm.pp2.repository.TestRepository;
 import sg.dm.pp2.repository.UnivInfoRepository;
 import sg.dm.pp2.service.vo.TestVO;
+import sg.dm.pp2.service.vo.UnivEmailDomainDetailVO;
+import sg.dm.pp2.service.vo.UnivInfoVO;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class tokenServiceImpl implements TokenService {
@@ -49,7 +52,12 @@ public class tokenServiceImpl implements TokenService {
     }
 
     @Override
-    public List<UnivInfo> getUnivInfoList() {
-        return univInfoRepository.findAll();
+    public List<UnivInfoVO> getUnivInfoList() {
+        List<UnivInfo> univInfoList = univInfoRepository.findAll();
+        return univInfoList.stream().map(x -> UnivInfoVO.builder()
+                        .univUid(x.getUnivUid())
+                        .univName(x.getUnivName())
+                        .build())
+                .toList();
     }
 }

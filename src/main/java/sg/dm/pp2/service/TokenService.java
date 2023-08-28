@@ -2,6 +2,7 @@ package sg.dm.pp2.service;
 
 import sg.dm.pp2.entity.UnivInfo;
 import sg.dm.pp2.service.vo.TestVO;
+import sg.dm.pp2.service.vo.UnivInfoVO;
 
 import java.util.List;
 
@@ -12,5 +13,5 @@ public interface TokenService {
 
     String tokenTestService(Integer userUid);
 
-    List<UnivInfo> getUnivInfoList();
+    List<UnivInfoVO> getUnivInfoList();
 }
