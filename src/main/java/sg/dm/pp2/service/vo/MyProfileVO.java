@@ -12,7 +12,8 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class UnivEmailDomainDetailVO {
-    private Integer domainUid;
-    private String domain;
+public class MyProfileVO {
+    private String studentID;
+    private String name;
+    private String message;
 }

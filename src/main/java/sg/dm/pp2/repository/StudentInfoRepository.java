@@ -7,10 +7,12 @@ import org.springframework.data.jpa.repository.Query;
 import sg.dm.pp2.entity.SnsLogin;
 import sg.dm.pp2.entity.StudentInfo;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface StudentInfoRepository extends JpaRepository<StudentInfo, Integer> {
     Optional<StudentInfo> findByUserUid(Integer userUid);
+    List<StudentInfo> findAllByUnivUidAndStudentIdPivot(int univUid, String studentIdPivot);
 
     @Transactional
     @Modifying

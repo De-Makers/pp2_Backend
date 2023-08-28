@@ -4,16 +4,20 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import sg.dm.pp2.service.student.StudentService;
+import sg.dm.pp2.service.vo.MyProfileVO;
+import sg.dm.pp2.service.vo.ProfileListVO;
 import sg.dm.pp2.util.TokenAuthUtil;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 public class StudentController {
     @Autowired
-    StudentService studentService;
+    private StudentService studentService;
 
     @Autowired
-    TokenAuthUtil tokenAuthUtil;
+    private TokenAuthUtil tokenAuthUtil;
 
     @PostMapping("/pp/profile")
     public void postUserProfile(
@@ -37,4 +41,21 @@ public class StudentController {
 //    ) {
 //        return tokenService.tokenToUserUidTestService(token.substring(7));
 //    }
+
+    @GetMapping("/pp/profile")
+    public MyProfileVO getMyProfile(@RequestHeader ("Authorization") String token){
+        Integer userUid = tokenAuthUtil.checkFullBearerUserTokenAndReturnUserUid(token);
+        return studentService.getMyProfile(userUid);
+    }
+
+    @GetMapping("/pp/profiles")
+    public List<ProfileListVO> getFamilyProfileList(@RequestHeader ("Authorization") String token){
+        Integer userUid = tokenAuthUtil.checkFullBearerUserTokenAndReturnUserUid(token);
+        return studentService.getFamilyProfileList(userUid);
+    }
+
+    @GetMapping("/pp/profile/{user_uid}")
+    public ProfileListVO getSomeoneProfile(@PathVariable(value = "user_uid") int userUid){
+        return studentService.getSomeoneProfile(userUid);
+    }
 }
