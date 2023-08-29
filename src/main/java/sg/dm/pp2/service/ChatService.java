@@ -38,7 +38,7 @@ public class ChatService {
         String randomId = UUID.randomUUID().toString();
         ChatRoom chatRoom = ChatRoom.builder()
                 .roomId(randomId)
-                .name(name)
+                .name(name.replace("\n", "").strip())
                 .build();
         chatRooms.put(randomId, chatRoom);
         return chatRoom;
