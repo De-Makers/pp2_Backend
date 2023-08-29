@@ -1,4 +1,4 @@
-package sg.dm.pp2.configure;
+package sg.dm.pp2.chat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -6,8 +6,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-import sg.dm.pp2.controller.dto.ChatMessage;
-import sg.dm.pp2.controller.dto.ChatRoom;
 import sg.dm.pp2.service.ChatService;
 
 @RequiredArgsConstructor

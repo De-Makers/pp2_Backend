@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
-import sg.dm.pp2.controller.dto.ChatRoom;
+import sg.dm.pp2.chat.ChatRoom;
 
 import java.io.IOException;
 import java.util.ArrayList;

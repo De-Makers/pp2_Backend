@@ -1,4 +1,4 @@
-package sg.dm.pp2.configure;
+package sg.dm.pp2.chat;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;

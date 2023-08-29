@@ -1,4 +1,4 @@
-package sg.dm.pp2.controller.dto;
+package sg.dm.pp2.chat;
 
 import lombok.Builder;
 import lombok.Getter;
