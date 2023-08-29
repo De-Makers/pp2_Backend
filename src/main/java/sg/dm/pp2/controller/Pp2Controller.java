@@ -1,23 +1,18 @@
 package sg.dm.pp2.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import sg.dm.pp2.controller.dto.GetUnivEmailDomainQueryDTO;
 import sg.dm.pp2.controller.dto.TestDTO;
-import sg.dm.pp2.entity.UnivInfo;
 import sg.dm.pp2.service.TokenService;
 import sg.dm.pp2.service.email.EmailQueryService;
 import sg.dm.pp2.service.text.TextTableService;
 import sg.dm.pp2.service.user.PpRegisterStateService;
+import sg.dm.pp2.service.user.UserService;
 import sg.dm.pp2.service.vo.RegisterStateVO;
 import sg.dm.pp2.service.vo.TestVO;
 import sg.dm.pp2.service.vo.TextTableVO;
-import sg.dm.pp2.service.vo.UnivEmailDomainDetailVO;
 import sg.dm.pp2.util.TokenAuthUtil;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,6 +26,8 @@ public class Pp2Controller {
     @Autowired
     private PpRegisterStateService ppRegisterStateService;
     @Autowired
+    private UserService userService;
+    @Autowired
     private TokenAuthUtil tokenAuthUtil;
 
     @PostMapping("/getname")
@@ -39,8 +36,16 @@ public class Pp2Controller {
     }
 
     @PostMapping("/auth/signup")
-    public String postSignUpAndReturnToken(@RequestHeader Integer userUid) {
-        return tokenService.tokenTestService(userUid);
+    public void postSignUp(
+            @RequestParam("token") String kakaoToken,
+            @PathVariable("kakao_uid") String kakaoUid,
+            @PathVariable("platform") Integer platform
+    ) {
+        userService.doSignUp(
+                kakaoUid,
+                kakaoToken,
+                platform
+        );
     }
 
     @GetMapping("/test/user-from-token")
