@@ -24,4 +24,7 @@ public class ChatroomUserTable {
 
     @Column
     private int userUid;
+
+    @Column(columnDefinition = "TINYINT(1)")
+    private boolean readCheck;
 }

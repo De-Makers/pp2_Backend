@@ -1,4 +1,4 @@
-package sg.dm.pp2.chatServer;
+package sg.dm.pp2.chatServer.VO;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
-public class ChatRoomVO {
-    private Integer chatRoomUid;
+public class ReadCheckVO {
+    private Boolean readCheck;
 }

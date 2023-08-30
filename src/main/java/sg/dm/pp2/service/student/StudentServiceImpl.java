@@ -54,7 +54,7 @@ public class StudentServiceImpl implements StudentService {
             //같은 사람들 수만큼
             for(int i=0;i<pivotCount;i++){
                 //채팅방 하나 만들고
-                ChatRoomDTO chatRoomDTO = ChatRoomDTO.create(studentIdPivot+"새로운채팅방"+i); //이름 어떻게 다양화?
+                ChatRoomDTO chatRoomDTO = ChatRoomDTO.create();
 
                 //session table db에 채팅방 저장
                 ChatroomSessionTable chatroomSessionTable = ChatroomSessionTable.builder()
@@ -64,8 +64,9 @@ public class StudentServiceImpl implements StudentService {
 
                 //내 유저아이디랑 채팅방 id db에 저장
                 ChatroomUserTable chatroomUserTable1 = ChatroomUserTable.builder()
-                        .userUid(userUid)
-                        .chatroomUid(savedChatRoomSession.getChatroomUid())
+                            .userUid(userUid)
+                            .chatroomUid(savedChatRoomSession.getChatroomUid())
+                            .readCheck(true)
                         .build();
                 chatRoomUserRepository.save(chatroomUserTable1);
 
@@ -73,13 +74,12 @@ public class StudentServiceImpl implements StudentService {
                 ChatroomUserTable chatroomUserTable2 = ChatroomUserTable.builder()
                         .userUid(studentInfoList.get(i).getUserUid())
                         .chatroomUid(savedChatRoomSession.getChatroomUid())
+                        .readCheck(true)
                         .build();
                 chatRoomUserRepository.save(chatroomUserTable2);
-
             }
         }
-        //TODO : 이제 어떻게 구독하게 만들거냐 논의해봐야함
-        //-------------------------------------------------
+        //------------------------------------------------------
 
         studentInfoRepository.updateStudentInfoByUserUid(
                 userUid = userUid,
