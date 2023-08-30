@@ -2,8 +2,11 @@ package sg.dm.pp2.service.student;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import sg.dm.pp2.chatServer.ChatRoomDTO;
+import sg.dm.pp2.chatServer.entity.ChatroomSessionTable;
 import sg.dm.pp2.entity.StudentInfo;
 import sg.dm.pp2.exception.NotFoundException;
+import sg.dm.pp2.chatServer.repository.ChatRoomSessionRepository;
 import sg.dm.pp2.service.vo.MyProfileVO;
 import sg.dm.pp2.service.vo.ProfileListVO;
 import sg.dm.pp2.util.StudentIdUtil;
@@ -21,6 +24,8 @@ public class StudentServiceImpl implements StudentService {
 
     @Autowired
     StudentIdUtil studentIdUtil;
+    @Autowired
+    ChatRoomSessionRepository chatRoomSessionRepository;
 
     @Override
     public void saveFirstProfileForStudentInfo(
@@ -33,6 +38,30 @@ public class StudentServiceImpl implements StudentService {
         StudentIdUtil.YearAndPivot yearAndPivot = studentIdUtil.getYearAndPivotFromStudentIdAndUnivUid(studentId, studentInfo.getUnivUid());
         String studentIdPivot = yearAndPivot.getPivot();
         Integer studentIdYear = yearAndPivot.getYear();
+
+        //-------------여기서부터 채팅방
+        int univUid = studentInfo.getUnivUid();
+        long pivotCount = studentInfoRepository.countByUnivUidAndStudentIdPivot(univUid, studentIdPivot);
+
+        if(pivotCount > 0) {
+            List<StudentInfo> studentInfoList = studentInfoRepository.findAllByUnivUidAndStudentIdPivot(univUid, studentIdPivot);
+            for(int i=0;i<pivotCount;i++){
+                ChatRoomDTO chatRoomDTO = ChatRoomDTO.create(studentIdPivot+"새로운채팅방"+i); //이름 어떻게 다양화?
+
+                ChatroomSessionTable chatroomSessionTable = ChatroomSessionTable.builder()
+                        .sessionId(chatRoomDTO.getRoomId())
+                        .build();
+                chatRoomSessionRepository.save(chatroomSessionTable);
+
+                //save 한 다음에 어떻게 바로 chatroom_uid를 가져올까?
+                //TODO : chatroomUserTable에 chatroom_Uid랑 userUid 두쌍 넣기
+            }
+        }
+
+
+
+        //--------------------
+
         studentInfoRepository.updateStudentInfoByUserUid(
                 userUid = userUid,
                 studentId = studentId,
@@ -41,6 +70,7 @@ public class StudentServiceImpl implements StudentService {
                 name = name,
                 message = message
         );
+
     }
 
     @Override

@@ -13,6 +13,7 @@ import java.util.Optional;
 public interface StudentInfoRepository extends JpaRepository<StudentInfo, Integer> {
     Optional<StudentInfo> findByUserUid(Integer userUid);
     List<StudentInfo> findAllByUnivUidAndStudentIdPivot(int univUid, String studentIdPivot);
+    long countByUnivUidAndStudentIdPivot(int univUid, String studentIdPivot);
 
     @Transactional
     @Modifying

@@ -82,6 +82,8 @@ public class EmailAuthCodeServiceImpl implements EmailAuthCodeService {
                     if(studentInfoOptional.isPresent()){
                         studentInfo = studentInfoOptional.get();
                         studentInfo.setAuthCode(String.valueOf(number));
+                        studentInfo.setStudentEmail(email);
+                        studentInfo.setUnivUid(emailAuthCodeCommandDTO.getUnivUid());
                         studentInfoRepository.save(studentInfo);
                         javaMailSender.send(message);
                     }
