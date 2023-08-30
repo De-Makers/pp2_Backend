@@ -78,6 +78,7 @@ public class StudentServiceImpl implements StudentService {
 
             }
         }
+        //TODO : 이제 어떻게 구독하게 만들거냐 논의해봐야함
         //-------------------------------------------------
 
         studentInfoRepository.updateStudentInfoByUserUid(
