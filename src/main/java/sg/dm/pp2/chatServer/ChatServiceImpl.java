@@ -32,7 +32,7 @@ public class ChatServiceImpl implements ChatService{
         Optional<ChatroomSessionTable> chatroomSessionTableOptional = chatRoomSessionRepository.findByChatroomUid(message.getRoomUid());
         if(chatroomSessionTableOptional.isPresent()){
             ChatTable chatTable = ChatTable.builder()
-                    .chatRoomUid(message.getRoomUid())
+                    .chatroomUid(message.getRoomUid())
                     .userUid(message.getWriterUid())
                     .message(message.getMessage())
                     .registeredDatetime(LocalDateTime.now())
@@ -57,5 +57,31 @@ public class ChatServiceImpl implements ChatService{
                 .collect(Collectors.toList());
 
         return chatRoomList;
+    }
+
+    //for test
+    @Override
+    public String getSessionId(int roomUid){
+        Optional<ChatroomSessionTable> chatroomSessionTableOptional = chatRoomSessionRepository.findByChatroomUid(roomUid);
+        if(chatroomSessionTableOptional.isPresent()){
+            return chatroomSessionTableOptional.get().getSessionId();
+        }
+        else{
+            throw new NotFoundException("CHATROOM_NOT_FOUND");
+        }
+    }
+
+    //for test
+    @Override
+    public int createRoomAndGetRoomId(String roomName){
+        ChatRoomDTO chatRoomDTO = ChatRoomDTO.create(roomName); //이름 어떻게 다양화?
+
+        //session table db에 채팅방 저장
+        ChatroomSessionTable chatroomSessionTable = ChatroomSessionTable.builder()
+                .sessionId(chatRoomDTO.getRoomId())
+                .build();
+        ChatroomSessionTable savedChatRoomSession = chatRoomSessionRepository.save(chatroomSessionTable);
+
+        return savedChatRoomSession.getChatroomUid();
     }
 }

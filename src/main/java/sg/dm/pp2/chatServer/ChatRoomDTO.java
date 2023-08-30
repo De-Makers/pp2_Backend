@@ -19,6 +19,7 @@ public class ChatRoomDTO {
     public static ChatRoomDTO create(String name){
         ChatRoomDTO room = new ChatRoomDTO();
 
+        //TODO: 중복체크
         room.roomId = UUID.randomUUID().toString();
         room.name = name;
         return room;
