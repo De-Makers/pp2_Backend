@@ -19,10 +19,7 @@ import java.math.BigDecimal;
 public class Test {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column
-    private BigDecimal testCode;
+    private int id;
 
     @Column
     private String testName;

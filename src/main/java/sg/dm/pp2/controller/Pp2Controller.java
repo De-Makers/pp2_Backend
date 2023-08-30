@@ -34,8 +34,8 @@ public class Pp2Controller {
     private TokenAuthUtil tokenAuthUtil;
 
     @PostMapping("/getname")
-    public TestVO getName(@RequestBody TestDTO testDTO){
-        return tokenService.testService(Long.parseLong(testDTO.getId()));
+    public void getName(@RequestBody TestDTO testDTO){
+        tokenService.testService(testDTO);
     }
 
     @PostMapping("/auth/signup")

@@ -8,5 +8,5 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class TestDTO {
-    private String id;
+    private String testName;
 }

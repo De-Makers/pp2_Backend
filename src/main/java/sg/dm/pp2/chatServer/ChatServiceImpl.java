@@ -30,7 +30,6 @@ public class ChatServiceImpl implements ChatService{
     @Override
     public void saveMessage(ChatMessageDTO message){
         Optional<ChatroomSessionTable> chatroomSessionTableOptional = chatRoomSessionRepository.findBySessionId(message.getRoomId());
-
         if(chatroomSessionTableOptional.isPresent()){
             int chatroomUid = chatroomSessionTableOptional.get().getChatroomUid();
             ChatTable chatTable = ChatTable.builder()

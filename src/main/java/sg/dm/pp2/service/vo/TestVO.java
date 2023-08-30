@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 public class TestVO {
-    private String testName;
+    private int id;
 }

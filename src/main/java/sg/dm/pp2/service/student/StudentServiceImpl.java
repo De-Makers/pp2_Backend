@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sg.dm.pp2.chatServer.ChatRoomDTO;
 import sg.dm.pp2.chatServer.entity.ChatroomSessionTable;
+import sg.dm.pp2.chatServer.entity.ChatroomUserTable;
+import sg.dm.pp2.chatServer.repository.ChatRoomUserRepository;
 import sg.dm.pp2.entity.StudentInfo;
 import sg.dm.pp2.exception.NotFoundException;
 import sg.dm.pp2.chatServer.repository.ChatRoomSessionRepository;
@@ -20,12 +22,14 @@ import java.util.stream.Collectors;
 public class StudentServiceImpl implements StudentService {
 
     @Autowired
-    StudentInfoRepository studentInfoRepository;
+    private StudentInfoRepository studentInfoRepository;
 
     @Autowired
     StudentIdUtil studentIdUtil;
     @Autowired
-    ChatRoomSessionRepository chatRoomSessionRepository;
+    private ChatRoomSessionRepository chatRoomSessionRepository;
+    @Autowired
+    private ChatRoomUserRepository chatRoomUserRepository;
 
     @Override
     public void saveFirstProfileForStudentInfo(
@@ -39,28 +43,42 @@ public class StudentServiceImpl implements StudentService {
         String studentIdPivot = yearAndPivot.getPivot();
         Integer studentIdYear = yearAndPivot.getYear();
 
-        //-------------여기서부터 채팅방
+        //-----------------------------------------여기서부터 채팅방
         int univUid = studentInfo.getUnivUid();
         long pivotCount = studentInfoRepository.countByUnivUidAndStudentIdPivot(univUid, studentIdPivot);
 
+        //같은 pivot을 같은 사람이 있으면
         if(pivotCount > 0) {
             List<StudentInfo> studentInfoList = studentInfoRepository.findAllByUnivUidAndStudentIdPivot(univUid, studentIdPivot);
+
+            //같은 사람들 수만큼
             for(int i=0;i<pivotCount;i++){
+                //채팅방 하나 만들고
                 ChatRoomDTO chatRoomDTO = ChatRoomDTO.create(studentIdPivot+"새로운채팅방"+i); //이름 어떻게 다양화?
 
+                //session table db에 채팅방 저장
                 ChatroomSessionTable chatroomSessionTable = ChatroomSessionTable.builder()
                         .sessionId(chatRoomDTO.getRoomId())
                         .build();
-                chatRoomSessionRepository.save(chatroomSessionTable);
+                ChatroomSessionTable savedChatRoomSession = chatRoomSessionRepository.save(chatroomSessionTable);
 
-                //save 한 다음에 어떻게 바로 chatroom_uid를 가져올까?
-                //TODO : chatroomUserTable에 chatroom_Uid랑 userUid 두쌍 넣기
+                //내 유저아이디랑 채팅방 id db에 저장
+                ChatroomUserTable chatroomUserTable1 = ChatroomUserTable.builder()
+                        .userUid(userUid)
+                        .chatroomUid(savedChatRoomSession.getChatroomUid())
+                        .build();
+                chatRoomUserRepository.save(chatroomUserTable1);
+
+                //상대 유저아이디랑 채팅방 id db에 저장
+                ChatroomUserTable chatroomUserTable2 = ChatroomUserTable.builder()
+                        .userUid(studentInfoList.get(i).getUserUid())
+                        .chatroomUid(savedChatRoomSession.getChatroomUid())
+                        .build();
+                chatRoomUserRepository.save(chatroomUserTable2);
+
             }
         }
-
-
-
-        //--------------------
+        //-------------------------------------------------
 
         studentInfoRepository.updateStudentInfoByUserUid(
                 userUid = userUid,
