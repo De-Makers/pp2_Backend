@@ -31,7 +31,7 @@ public class ChatRoomController {
         return chatService.getReadCheck(chatroomUid, userUid);
     }
 
-    @GetMapping("chat/message/last/{chatroom_uid}")
+    @GetMapping("/chat/message/last/{chatroom_uid}")
     public LastMessageVO getLastMessage(@PathVariable(value = "chatroom_uid") int chatroomUid){
         return chatService.getLastMessage(chatroomUid);
     }

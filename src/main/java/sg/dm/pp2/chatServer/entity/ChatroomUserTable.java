@@ -11,7 +11,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @Getter
 @Setter
-@Table(name="chatroom_uesr_table")
+@Table(name="chatroom_user_table")
 @Entity
 @SuperBuilder
 public class ChatroomUserTable {

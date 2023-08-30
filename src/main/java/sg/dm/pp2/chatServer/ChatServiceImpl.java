@@ -44,6 +44,8 @@ public class ChatServiceImpl implements ChatService{
 
             //나를 제외한 상대방 read_check false로 set
             long chatCount = chatRoomUserRepository.countByChatroomUid(message.getRoomUid());
+            log.info("roomuid : " + message.getRoomUid());
+            log.info("chatCount : " +chatCount);
             if(chatCount>0) {
                 List<ChatroomUserTable> chatroomUserTableList = chatRoomUserRepository.findAllByChatroomUid(message.getRoomUid());
                 for (int i = 0; i < chatCount; i++) {
