@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface ChatRoomSessionRepository extends JpaRepository<ChatroomSessionTable, Integer> {
     Optional<ChatroomSessionTable> findBySessionId(String sessionId);
+    Optional<ChatroomSessionTable> findByChatroomUid(int chatroomUid);
 }

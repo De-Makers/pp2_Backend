@@ -28,18 +28,19 @@ public class ChatServiceImpl implements ChatService{
     private ChatRoomUserRepository chatRoomUserRepository;
 
     @Override
-    public void saveMessage(ChatMessageDTO message){
-        Optional<ChatroomSessionTable> chatroomSessionTableOptional = chatRoomSessionRepository.findBySessionId(message.getRoomId());
+    public String saveMessageAndReturnSessionId(ChatMessageDTO message){
+        Optional<ChatroomSessionTable> chatroomSessionTableOptional = chatRoomSessionRepository.findByChatroomUid(message.getRoomUid());
         if(chatroomSessionTableOptional.isPresent()){
-            int chatroomUid = chatroomSessionTableOptional.get().getChatroomUid();
             ChatTable chatTable = ChatTable.builder()
-                    .chatRoomUid(chatroomUid)
+                    .chatRoomUid(message.getRoomUid())
                     .userUid(message.getWriterUid())
                     .message(message.getMessage())
                     .registeredDatetime(LocalDateTime.now())
                     .build();
 
             chatRepository.save(chatTable);
+            String sessionId = chatroomSessionTableOptional.get().getSessionId();
+            return sessionId;
         }
         else{
             //session_id로 채팅방 uid를 찾지 못함
