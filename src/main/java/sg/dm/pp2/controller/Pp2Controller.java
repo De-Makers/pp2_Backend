@@ -35,7 +35,7 @@ public class Pp2Controller {
         tokenService.testService(testDTO);
     }
 
-    @PostMapping("/auth/signup")
+    @PostMapping("/auth/signup/{kakao_uid}/{platform}")
     public void postSignUp(
             @RequestParam("token") String kakaoToken,
             @PathVariable("kakao_uid") String kakaoUid,

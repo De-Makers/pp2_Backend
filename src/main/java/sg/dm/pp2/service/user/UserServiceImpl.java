@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService {
             newSnsLogin.setSnsAccountUid(snsAccountUid);
             newSnsLogin.setToken(kakaoToken);
             SnsLogin savedLogin = snsLoginRepository.save(newSnsLogin);
-            return savedLogin.getUserUid(); // TODO: 이러면 저장한 userUid return하는지 확인
+            return savedLogin.getUserUid();
         }
     }
 
@@ -63,6 +63,7 @@ public class UserServiceImpl implements UserService {
         newUserInfo.setHitCount(0);
         newUserInfo.setCreatedDateTime(LocalDateTime.now());
         newStudentInfo.setUserUid(userUid) ;
+        System.out.print(newStudentInfo.toString());
         userInfoRepository.save(newUserInfo);
         studentInfoRepository.save(newStudentInfo);
     }
