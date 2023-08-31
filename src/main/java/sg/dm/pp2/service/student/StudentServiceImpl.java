@@ -1,5 +1,6 @@
 package sg.dm.pp2.service.student;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sg.dm.pp2.chatServer.ChatRoomDTO;
@@ -19,6 +20,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class StudentServiceImpl implements StudentService {
 
     @Autowired
@@ -45,12 +47,12 @@ public class StudentServiceImpl implements StudentService {
 
         //-----------------------------------------여기서부터 채팅방
         int univUid = studentInfo.getUnivUid();
-        long pivotCount = studentInfoRepository.countByUnivUidAndStudentIdPivot(univUid, studentIdPivot);
+        List<StudentInfo> studentInfoList = studentInfoRepository.findAllByUnivUidAndStudentIdPivot(univUid, studentIdPivot);
+        long pivotCount = studentInfoList.stream().count();
+        log.info("pivotCount : " + pivotCount);
 
         //같은 pivot을 같은 사람이 있으면
         if(pivotCount > 0) {
-            List<StudentInfo> studentInfoList = studentInfoRepository.findAllByUnivUidAndStudentIdPivot(univUid, studentIdPivot);
-
             //같은 사람들 수만큼
             for(int i=0;i<pivotCount;i++){
                 //채팅방 하나 만들고

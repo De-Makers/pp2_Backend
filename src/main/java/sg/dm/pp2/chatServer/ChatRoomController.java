@@ -23,11 +23,12 @@ public class ChatRoomController {
         Integer userUid = tokenAuthUtil.checkFullBearerUserTokenAndReturnUserUid(token);
         return chatService.getChatRoomUidList(userUid);
     }
-    @GetMapping("/chat/message/last/check/{chatroom_uid}/{user_uid}")
-    public ReadCheckVO getLaskCheck(
-            @PathVariable(value = "chatroom_uid") int chatroomUid,
-            @PathVariable(value = "user_uid") int userUid
+    @GetMapping("/chat/message/last/check/{chatroom_uid}")
+    public ReadCheckVO getLastCheck(
+            @RequestHeader("Authorization") String token,
+            @PathVariable(value = "chatroom_uid") int chatroomUid
     ){
+        Integer userUid = tokenAuthUtil.checkFullBearerUserTokenAndReturnUserUid(token);
         return chatService.getReadCheck(chatroomUid, userUid);
     }
 
@@ -37,7 +38,7 @@ public class ChatRoomController {
     }
 
 
-    //--------------------FOR TEST------------------------
+    //TODO : --------------------FOR TEST------------------------
     //room test controller
     @PostMapping("/chat/test/room")
     public int createRoom(){

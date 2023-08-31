@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class ChatServiceImpl implements ChatService{
+public class ChatServiceImpl implements ChatService {
     @Autowired
     private ChatRepository chatRepository;
     @Autowired
@@ -30,9 +30,9 @@ public class ChatServiceImpl implements ChatService{
     private ChatRoomUserRepository chatRoomUserRepository;
 
     @Override
-    public String saveMessageAndReturnSessionId(ChatMessageDTO message){
+    public String saveMessageAndReturnSessionId(ChatMessageDTO message) {
         Optional<ChatroomSessionTable> chatroomSessionTableOptional = chatRoomSessionRepository.findByChatroomUid(message.getRoomUid());
-        if(chatroomSessionTableOptional.isPresent()){
+        if (chatroomSessionTableOptional.isPresent()) {
             //메세지 저장
             ChatTable chatTable = ChatTable.builder()
                     .chatroomUid(message.getRoomUid())
@@ -43,11 +43,11 @@ public class ChatServiceImpl implements ChatService{
             chatRepository.save(chatTable);
 
             //나를 제외한 상대방 read_check false로 set
-            long chatCount = chatRoomUserRepository.countByChatroomUid(message.getRoomUid());
+            List<ChatroomUserTable> chatroomUserTableList = chatRoomUserRepository.findAllByChatroomUid(message.getRoomUid());
+            long chatCount = chatroomUserTableList.stream().count();
             log.info("roomuid : " + message.getRoomUid());
-            log.info("chatCount : " +chatCount);
-            if(chatCount>0) {
-                List<ChatroomUserTable> chatroomUserTableList = chatRoomUserRepository.findAllByChatroomUid(message.getRoomUid());
+            log.info("chatCount : " + chatCount);
+            if (chatCount > 0) {
                 for (int i = 0; i < chatCount; i++) {
                     if (chatroomUserTableList.get(i).getUserUid() != message.getWriterUid()) {
                         chatroomUserTableList.get(i).setReadCheck(false);
@@ -60,48 +60,45 @@ public class ChatServiceImpl implements ChatService{
             //chatroom의 session_id 리턴
             String sessionId = chatroomSessionTableOptional.get().getSessionId();
             return sessionId;
-        }
-        else{
+        } else {
             //session_id로 채팅방 uid를 찾지 못함
             throw new NotFoundException("CHATROOM_NOT_FOUND");
         }
     }
 
     @Override
-    public List<ChatRoomVO> getChatRoomUidList(int userUid){
+    public List<ChatRoomVO> getChatRoomUidList(int userUid) {
         List<ChatroomUserTable> chatroomUserTableList = chatRoomUserRepository.findAllByUserUid(userUid);
         List<ChatRoomVO> chatRoomList = chatroomUserTableList.stream().map(x -> ChatRoomVO.builder()
-                    .chatroomUid(x.getChatroomUid())
-                    .build())
+                        .chatroomUid(x.getChatroomUid())
+                        .build())
                 .collect(Collectors.toList());
 
         return chatRoomList;
     }
 
     @Override
-    public ReadCheckVO getReadCheck(int chatroomUid, int userUid){
+    public ReadCheckVO getReadCheck(int chatroomUid, int userUid) {
         Optional<ChatroomUserTable> chatroomUserTableOptional = chatRoomUserRepository.findByChatroomUidAndUserUid(chatroomUid, userUid);
-        if(chatroomUserTableOptional.isPresent()){
+        if (chatroomUserTableOptional.isPresent()) {
             ReadCheckVO readCheckVO = ReadCheckVO.builder()
                     .readCheck(chatroomUserTableOptional.get().isReadCheck())
                     .build();
             return readCheckVO;
-        }
-        else{
+        } else {
             throw new NotFoundException("CHATROOM_NOT_FOUND");
         }
     }
 
     @Override
-    public LastMessageVO getLastMessage(int chatroomUid){
+    public LastMessageVO getLastMessage(int chatroomUid) {
         Optional<ChatTable> chatTableOptional = chatRepository.findTopByChatroomUidOrderByChatUidDesc(chatroomUid);
-        if(chatTableOptional.isPresent()){
+        if (chatTableOptional.isPresent()) {
             LastMessageVO lastMessageVO = LastMessageVO.builder()
                     .message(chatTableOptional.get().getMessage())
                     .build();
             return lastMessageVO;
-        }
-        else{
+        } else {
             LastMessageVO lastMessageVO = LastMessageVO.builder()
                     .message(null)
                     .build();
@@ -110,22 +107,21 @@ public class ChatServiceImpl implements ChatService{
     }
 
 
-    //---------------------TEST-----------------------------
+    //TODO : ---------------------TEST-----------------------------
     //for test
     @Override
-    public String getSessionId(int roomUid){
+    public String getSessionId(int roomUid) {
         Optional<ChatroomSessionTable> chatroomSessionTableOptional = chatRoomSessionRepository.findByChatroomUid(roomUid);
-        if(chatroomSessionTableOptional.isPresent()){
+        if (chatroomSessionTableOptional.isPresent()) {
             return chatroomSessionTableOptional.get().getSessionId();
-        }
-        else{
+        } else {
             throw new NotFoundException("CHATROOM_NOT_FOUND");
         }
     }
 
     //for test
     @Override
-    public int createRoomAndGetRoomId(){
+    public int createRoomAndGetRoomId() {
         ChatRoomDTO chatRoomDTO = ChatRoomDTO.create();
 
         //session table db에 채팅방 저장

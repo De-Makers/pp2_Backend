@@ -30,11 +30,6 @@ public class Pp2Controller {
     @Autowired
     private TokenAuthUtil tokenAuthUtil;
 
-    @PostMapping("/getname")
-    public void getName(@RequestBody TestDTO testDTO){
-        tokenService.testService(testDTO);
-    }
-
     @PostMapping("/auth/signup/{kakao_uid}/{platform}")
     public void postSignUp(
             @RequestParam("token") String kakaoToken,
@@ -48,19 +43,32 @@ public class Pp2Controller {
         );
     }
 
-    @GetMapping("/test/user-from-token")
-    public String getUserUidFromToken(@RequestHeader("Authorization") String token) {
-        return tokenService.tokenToUserUidStringService(token.substring(7));
-    }
-
     @GetMapping("/public/text/{text_uid}")
-    public TextTableVO getText(@PathVariable(value = "text_Uid") String textUid){
+    public TextTableVO getText(@PathVariable(value = "text_Uid") String textUid) {
         return textTableService.getText(textUid);
     }
 
     @GetMapping("/auth/state")
-    public RegisterStateVO getRegisterState(@RequestHeader ("Authorization") String token) {
+    public RegisterStateVO getRegisterState(@RequestHeader("Authorization") String token) {
         Integer userUid = tokenAuthUtil.checkFullBearerUserTokenAndReturnUserUid(token);
         return ppRegisterStateService.getRegisterState(userUid);
     }
+
+
+    //TODO : --------------FOR TEST-----------------------
+
+    @PostMapping("/getname")
+    public void getName(@RequestBody TestDTO testDTO) {
+        tokenService.testService(testDTO);
+    }
+
+    @GetMapping("/test/user-from-token")
+    public String getUserUidFromToken(@RequestHeader("Authorization") String token) {
+        return tokenService.tokenToUserUidStringService(token.substring(7));
+    }
+    @PostMapping("test/auth/signup")
+    public String postSignUpAndReturnToken(@RequestHeader Integer userUid) {
+        return tokenService.tokenTestService(userUid);
+    }
+
 }

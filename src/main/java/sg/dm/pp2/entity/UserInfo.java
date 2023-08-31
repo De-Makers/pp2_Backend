@@ -27,11 +27,11 @@ public class UserInfo {
     private LocalDate expiredDate;
 
     @Column(nullable = true)
-    private LocalDateTime lastLoginDateTime;
+    private LocalDateTime lastLoginDatetime;
 
     @Column(nullable = true)
-    private LocalDateTime modifiedDateTime;
+    private LocalDateTime modifiedDatetime;
 
     @Column(nullable = true)
-    private LocalDateTime createdDateTime;
+    private LocalDateTime createdDatetime;
 }

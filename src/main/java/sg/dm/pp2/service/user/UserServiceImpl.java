@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
         StudentInfo newStudentInfo = new StudentInfo();
         newUserInfo.setUserUid(userUid);
         newUserInfo.setHitCount(0);
-        newUserInfo.setCreatedDateTime(LocalDateTime.now());
+        newUserInfo.setCreatedDatetime(LocalDateTime.now());
         newStudentInfo.setUserUid(userUid) ;
         System.out.print(newStudentInfo.toString());
         userInfoRepository.save(newUserInfo);

@@ -11,11 +11,12 @@ public interface ChatService {
 
     List<ChatRoomVO> getChatRoomUidList(int userUid);
 
-    String getSessionId(int rooomUid);
-
-    int createRoomAndGetRoomId();
-
     ReadCheckVO getReadCheck(int chatroomUid, int userUid);
 
     LastMessageVO getLastMessage(int chatroomUid);
+
+    //TODO : -------------FOR TEST----------
+    String getSessionId(int rooomUid);
+
+    int createRoomAndGetRoomId();
 }
