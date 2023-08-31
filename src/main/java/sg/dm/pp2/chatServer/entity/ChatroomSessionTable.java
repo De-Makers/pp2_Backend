@@ -1,4 +1,4 @@
-package sg.dm.pp2.entity;
+package sg.dm.pp2.chatServer.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -7,20 +7,18 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-import java.math.BigDecimal;
-
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-@Table(name="test")
+@Table(name="chatroom_session_table")
 @Entity
 @SuperBuilder
-public class Test {
+public class ChatroomSessionTable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private int chatroomUid;
 
     @Column
-    private String testName;
+    private String sessionId;
 }

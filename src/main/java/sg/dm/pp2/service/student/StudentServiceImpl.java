@@ -1,9 +1,15 @@
 package sg.dm.pp2.service.student;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import sg.dm.pp2.chatServer.ChatRoomDTO;
+import sg.dm.pp2.chatServer.entity.ChatroomSessionTable;
+import sg.dm.pp2.chatServer.entity.ChatroomUserTable;
+import sg.dm.pp2.chatServer.repository.ChatRoomUserRepository;
 import sg.dm.pp2.entity.StudentInfo;
 import sg.dm.pp2.exception.NotFoundException;
+import sg.dm.pp2.chatServer.repository.ChatRoomSessionRepository;
 import sg.dm.pp2.service.vo.MyProfileVO;
 import sg.dm.pp2.service.vo.ProfileListVO;
 import sg.dm.pp2.util.StudentIdUtil;
@@ -14,13 +20,18 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class StudentServiceImpl implements StudentService {
 
     @Autowired
-    StudentInfoRepository studentInfoRepository;
+    private StudentInfoRepository studentInfoRepository;
 
     @Autowired
     StudentIdUtil studentIdUtil;
+    @Autowired
+    private ChatRoomSessionRepository chatRoomSessionRepository;
+    @Autowired
+    private ChatRoomUserRepository chatRoomUserRepository;
 
     @Override
     public void saveFirstProfileForStudentInfo(
@@ -33,6 +44,45 @@ public class StudentServiceImpl implements StudentService {
         StudentIdUtil.YearAndPivot yearAndPivot = studentIdUtil.getYearAndPivotFromStudentIdAndUnivUid(studentId, studentInfo.getUnivUid());
         String studentIdPivot = yearAndPivot.getPivot();
         Integer studentIdYear = yearAndPivot.getYear();
+
+        //-----------------------------------------여기서부터 채팅방
+        int univUid = studentInfo.getUnivUid();
+        List<StudentInfo> studentInfoList = studentInfoRepository.findAllByUnivUidAndStudentIdPivot(univUid, studentIdPivot);
+        long pivotCount = studentInfoList.stream().count();
+        log.info("pivotCount : " + pivotCount);
+
+        //같은 pivot을 같은 사람이 있으면
+        if(pivotCount > 0) {
+            //같은 사람들 수만큼
+            for(int i=0;i<pivotCount;i++){
+                //채팅방 하나 만들고
+                ChatRoomDTO chatRoomDTO = ChatRoomDTO.create();
+
+                //session table db에 채팅방 저장
+                ChatroomSessionTable chatroomSessionTable = ChatroomSessionTable.builder()
+                        .sessionId(chatRoomDTO.getRoomId())
+                        .build();
+                ChatroomSessionTable savedChatRoomSession = chatRoomSessionRepository.save(chatroomSessionTable);
+
+                //내 유저아이디랑 채팅방 id db에 저장
+                ChatroomUserTable chatroomUserTable1 = ChatroomUserTable.builder()
+                            .userUid(userUid)
+                            .chatroomUid(savedChatRoomSession.getChatroomUid())
+                            .readCheck(true)
+                        .build();
+                chatRoomUserRepository.save(chatroomUserTable1);
+
+                //상대 유저아이디랑 채팅방 id db에 저장
+                ChatroomUserTable chatroomUserTable2 = ChatroomUserTable.builder()
+                        .userUid(studentInfoList.get(i).getUserUid())
+                        .chatroomUid(savedChatRoomSession.getChatroomUid())
+                        .readCheck(true)
+                        .build();
+                chatRoomUserRepository.save(chatroomUserTable2);
+            }
+        }
+        //------------------------------------------------------
+
         studentInfoRepository.updateStudentInfoByUserUid(
                 userUid = userUid,
                 studentId = studentId,
@@ -41,6 +91,7 @@ public class StudentServiceImpl implements StudentService {
                 name = name,
                 message = message
         );
+
     }
 
     @Override

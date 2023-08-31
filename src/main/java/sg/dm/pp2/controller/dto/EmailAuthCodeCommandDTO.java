@@ -9,6 +9,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class EmailAuthCodeCommandDTO {
     private String email;
-    private int univId;
+    private int univUid;
     private int domainUid;
 }

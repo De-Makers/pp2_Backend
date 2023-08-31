@@ -16,8 +16,8 @@ public class StudentInfo {
     @Id
     private int userUid;
 
-    @Column
-    private int univUid;
+    @Column(nullable = true)
+    private Integer univUid;
 
     @Column(nullable = true)
     private String name;

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sg.dm.pp2.configure.JwtHelper;
+import sg.dm.pp2.controller.dto.TestDTO;
 import sg.dm.pp2.entity.Test;
 import sg.dm.pp2.entity.UnivInfo;
 import sg.dm.pp2.repository.TestRepository;
@@ -17,6 +18,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class tokenServiceImpl implements TokenService {
     @Autowired
     private TestRepository testRepository;
@@ -28,17 +30,21 @@ public class tokenServiceImpl implements TokenService {
 
 
     @Override
-    public TestVO testService(Long id) {
-        Optional<Test> test = testRepository.findById(id);
-        if (test.isPresent()) {
-            return TestVO.builder()
-                    .testName(test.get().getTestName())
-                    .build();
-        } else {
-            return TestVO.builder()
-                    .testName("not exist")
-                    .build();
+    public void testService(TestDTO testDTO) {
+        String name = testDTO.getTestName();
+        Test test = Test.builder()
+                .testName(name)
+                .build();
+        Test savedTest = testRepository.save(test);
+        log.info("Id : " + savedTest.getId());
+
+        Optional<Test> testOptional = testRepository.findByTestName(name);
+        if(testOptional.isPresent()){
+            int id = testOptional.get().getId();
+            log.info("찾을수 있니? : " + id);
         }
+
+
     }
 
     @Override

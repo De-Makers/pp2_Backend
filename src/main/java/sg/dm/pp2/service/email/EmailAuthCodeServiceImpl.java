@@ -82,6 +82,8 @@ public class EmailAuthCodeServiceImpl implements EmailAuthCodeService {
                     if(studentInfoOptional.isPresent()){
                         studentInfo = studentInfoOptional.get();
                         studentInfo.setAuthCode(String.valueOf(number));
+                        studentInfo.setStudentEmail(email);
+                        studentInfo.setUnivUid(emailAuthCodeCommandDTO.getUnivUid());
                         studentInfoRepository.save(studentInfo);
                         javaMailSender.send(message);
                     }
@@ -96,7 +98,7 @@ public class EmailAuthCodeServiceImpl implements EmailAuthCodeService {
 
             } else {
                 //domain_uid로 domain을 찾지 못함
-                throw new DomainException("domain_uid로 domain을 찾지 못함");
+                throw new NotFoundException("DOMAIN_NOT_FOUND");
             }
         } else {
             //이메일 양식 오류(이메일에 @가 없음)

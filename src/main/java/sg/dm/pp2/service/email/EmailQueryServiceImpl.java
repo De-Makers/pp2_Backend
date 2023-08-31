@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import sg.dm.pp2.controller.dto.GetUnivEmailDomainQueryDTO;
 import sg.dm.pp2.entity.UnivEmailDomain;
 import sg.dm.pp2.entity.UnivInfo;
+import sg.dm.pp2.exception.NotFoundException;
 import sg.dm.pp2.repository.UnivEmailDomainRepository;
 import sg.dm.pp2.repository.UnivInfoRepository;
 import sg.dm.pp2.service.vo.UnivEmailDomainDetailVO;
@@ -41,7 +42,8 @@ public class EmailQueryServiceImpl implements EmailQueryService{
 
             return univEmailDomainDetailVO;
         } else {
-            return null; //없으면 어떡하지
+            //univ_uid로 univ를 찾지 못함
+            throw new NotFoundException("UNIV_NOT_FOUND");
         }
     }
 

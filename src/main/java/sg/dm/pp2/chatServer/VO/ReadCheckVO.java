@@ -1,4 +1,4 @@
-package sg.dm.pp2.service.vo;
+package sg.dm.pp2.chatServer.VO;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
-public class TestVO {
-    private int id;
+public class ReadCheckVO {
+    private Boolean readCheck;
 }

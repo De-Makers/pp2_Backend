@@ -1,23 +1,18 @@
 package sg.dm.pp2.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import sg.dm.pp2.controller.dto.GetUnivEmailDomainQueryDTO;
 import sg.dm.pp2.controller.dto.TestDTO;
-import sg.dm.pp2.entity.UnivInfo;
 import sg.dm.pp2.service.TokenService;
 import sg.dm.pp2.service.email.EmailQueryService;
 import sg.dm.pp2.service.text.TextTableService;
 import sg.dm.pp2.service.user.PpRegisterStateService;
+import sg.dm.pp2.service.user.UserService;
 import sg.dm.pp2.service.vo.RegisterStateVO;
 import sg.dm.pp2.service.vo.TestVO;
 import sg.dm.pp2.service.vo.TextTableVO;
-import sg.dm.pp2.service.vo.UnivEmailDomainDetailVO;
 import sg.dm.pp2.util.TokenAuthUtil;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,31 +26,49 @@ public class Pp2Controller {
     @Autowired
     private PpRegisterStateService ppRegisterStateService;
     @Autowired
+    private UserService userService;
+    @Autowired
     private TokenAuthUtil tokenAuthUtil;
 
-    @PostMapping("/getname")
-    public TestVO getName(@RequestBody TestDTO testDTO){
-        return tokenService.testService(Long.parseLong(testDTO.getId()));
+    @PostMapping("/auth/signup/{kakao_uid}/{platform}")
+    public void postSignUp(
+            @RequestParam("token") String kakaoToken,
+            @PathVariable("kakao_uid") String kakaoUid,
+            @PathVariable("platform") Integer platform
+    ) {
+        userService.doSignUp(
+                kakaoUid,
+                kakaoToken,
+                platform
+        );
     }
 
-    @PostMapping("/auth/signup")
-    public String postSignUpAndReturnToken(@RequestHeader Integer userUid) {
-        return tokenService.tokenTestService(userUid);
+    @GetMapping("/public/text/{text_uid}")
+    public TextTableVO getText(@PathVariable(value = "text_Uid") String textUid) {
+        return textTableService.getText(textUid);
+    }
+
+    @GetMapping("/auth/state")
+    public RegisterStateVO getRegisterState(@RequestHeader("Authorization") String token) {
+        Integer userUid = tokenAuthUtil.checkFullBearerUserTokenAndReturnUserUid(token);
+        return ppRegisterStateService.getRegisterState(userUid);
+    }
+
+
+    //TODO : --------------FOR TEST-----------------------
+
+    @PostMapping("/getname")
+    public void getName(@RequestBody TestDTO testDTO) {
+        tokenService.testService(testDTO);
     }
 
     @GetMapping("/test/user-from-token")
     public String getUserUidFromToken(@RequestHeader("Authorization") String token) {
         return tokenService.tokenToUserUidStringService(token.substring(7));
     }
-
-    @GetMapping("/public/text/{text_uid}")
-    public TextTableVO getText(@PathVariable(value = "text_Uid") String textUid){
-        return textTableService.getText(textUid);
+    @PostMapping("test/auth/signup")
+    public String postSignUpAndReturnToken(@RequestHeader Integer userUid) {
+        return tokenService.tokenTestService(userUid);
     }
 
-    @GetMapping("/auth/state")
-    public RegisterStateVO getRegisterState(@RequestHeader ("Authorization") String token) {
-        Integer userUid = tokenAuthUtil.checkFullBearerUserTokenAndReturnUserUid(token);
-        return ppRegisterStateService.getRegisterState(userUid);
-    }
 }
