@@ -22,7 +22,7 @@ public class ChatTable {
     private int chatUid;
 
     @Column
-    private int chatRoomUid;
+    private int chatroomUid;
 
     @Column
     private int userUid;
