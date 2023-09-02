@@ -8,5 +8,6 @@ import lombok.Setter;
 public class ChatMessageDTO {
     private int roomUid;
     private int writerUid;
+    private int typeUid;
     private String message;
 }

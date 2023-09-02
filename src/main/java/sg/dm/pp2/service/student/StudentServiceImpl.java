@@ -38,7 +38,8 @@ public class StudentServiceImpl implements StudentService {
             Integer userUid,
             String studentId,
             String name,
-            String message
+            String message,
+            String url
     ) {
         StudentInfo studentInfo = studentInfoRepository.findByUserUid(userUid).get();
         StudentIdUtil.YearAndPivot yearAndPivot = studentIdUtil.getYearAndPivotFromStudentIdAndUnivUid(studentId, studentInfo.getUnivUid());
@@ -51,7 +52,7 @@ public class StudentServiceImpl implements StudentService {
         long pivotCount = studentInfoList.stream().count();
         log.info("pivotCount : " + pivotCount);
 
-        //같은 pivot을 같은 사람이 있으면
+        //pivot이 같은 사람이 있으면
         if(pivotCount > 0) {
             //같은 사람들 수만큼
             for(int i=0;i<pivotCount;i++){
@@ -89,7 +90,8 @@ public class StudentServiceImpl implements StudentService {
                 studentIdYear = studentIdYear,
                 studentIdPivot = studentIdPivot,
                 name = name,
-                message = message
+                message = message,
+                url = url
         );
 
     }
@@ -102,6 +104,7 @@ public class StudentServiceImpl implements StudentService {
                     .studentID(studentInfoOptional.get().getStudentId())
                     .name(studentInfoOptional.get().getName())
                     .message(studentInfoOptional.get().getMessage())
+                    .imgUrl(studentInfoOptional.get().getProfileImageUrl())
                     .build();
             return myProfileVO;
         }
@@ -125,7 +128,8 @@ public class StudentServiceImpl implements StudentService {
                             .studentId(x.getStudentId())
                             .studentIdYear(x.getStudentIdYear())
                             .studentIdPivot(x.getStudentIdPivot())
-                            .message((x.getMessage()))
+                            .message(x.getMessage())
+                            .imgUrl(x.getProfileImageUrl())
                             .build())
                     .collect(Collectors.toList());
 
@@ -148,6 +152,7 @@ public class StudentServiceImpl implements StudentService {
                     .studentIdYear(studentInfoOptional.get().getStudentIdYear())
                     .studentIdPivot(studentInfoOptional.get().getStudentIdPivot())
                     .message(studentInfoOptional.get().getMessage())
+                    .imgUrl(studentInfoOptional.get().getProfileImageUrl())
                     .build();
 
             return profileListVO;

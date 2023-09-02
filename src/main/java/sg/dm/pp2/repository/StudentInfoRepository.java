@@ -22,7 +22,8 @@ public interface StudentInfoRepository extends JpaRepository<StudentInfo, Intege
             "s.studentIdYear = :studentIdYear, " +
             "s.studentIdPivot = :studentIdPivot, " +
             "s.name = :name, " +
-            "s.message = :message " +
+            "s.message = :message, " +
+            "s.profileImageUrl = :url " +
             "WHERE s.userUid = :userUid")
     public void updateStudentInfoByUserUid(
             Integer userUid,
@@ -30,6 +31,7 @@ public interface StudentInfoRepository extends JpaRepository<StudentInfo, Intege
             Integer studentIdYear,
             String studentIdPivot,
             String name,
-            String message
+            String message,
+            String url
     );
 }

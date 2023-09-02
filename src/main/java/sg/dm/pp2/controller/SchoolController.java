@@ -32,8 +32,8 @@ public class SchoolController {
         return tokenService.getUnivInfoList();
     }
 
-    @GetMapping("/pp/school/email-domain/{univ_uid}")
-    public List<UnivEmailDomainDetailVO> getUnivEmailDomain(@PathVariable(value = "univ_uid") int univUid){
+    @GetMapping("/pp/school/email-domain/{univUid}")
+    public List<UnivEmailDomainDetailVO> getUnivEmailDomain(@PathVariable(value = "univUid") int univUid){
         return emailQueryService.getUnivEmailDomainList(univUid);
     }
 

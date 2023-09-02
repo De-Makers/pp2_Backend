@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class MyProfileVO {
     private String studentID;
     private String name;
     private String message;
+    private String imgUrl;
 }

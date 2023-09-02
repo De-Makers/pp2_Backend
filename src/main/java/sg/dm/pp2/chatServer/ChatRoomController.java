@@ -2,9 +2,11 @@ package sg.dm.pp2.chatServer;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import sg.dm.pp2.chatServer.VO.ChatRoomVO;
 import sg.dm.pp2.chatServer.VO.LastMessageVO;
+import sg.dm.pp2.chatServer.VO.MessageVO;
 import sg.dm.pp2.chatServer.VO.ReadCheckVO;
 import sg.dm.pp2.util.TokenAuthUtil;
 
@@ -37,8 +39,13 @@ public class ChatRoomController {
         return chatService.getLastMessage(chatroomUid);
     }
 
+    @GetMapping("/chat/message/all/{chatroom_uid}")
+    public List<MessageVO> getAllMessage(@PathVariable(value = "chatroom_uid") int chatroomUid, Pageable pageable){
+        return chatService.getAllMessage(chatroomUid, pageable);
+    }
 
-    //TODO : --------------------FOR TEST------------------------
+
+    //TODO: --------------------FOR TEST------------------------
     //room test controller
     @PostMapping("/chat/test/room")
     public int createRoom(){

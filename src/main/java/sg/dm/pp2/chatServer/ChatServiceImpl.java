@@ -2,9 +2,12 @@ package sg.dm.pp2.chatServer;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import sg.dm.pp2.chatServer.VO.ChatRoomVO;
 import sg.dm.pp2.chatServer.VO.LastMessageVO;
+import sg.dm.pp2.chatServer.VO.MessageVO;
 import sg.dm.pp2.chatServer.VO.ReadCheckVO;
 import sg.dm.pp2.chatServer.entity.ChatTable;
 import sg.dm.pp2.chatServer.entity.ChatroomSessionTable;
@@ -12,9 +15,16 @@ import sg.dm.pp2.chatServer.entity.ChatroomUserTable;
 import sg.dm.pp2.chatServer.repository.ChatRepository;
 import sg.dm.pp2.chatServer.repository.ChatRoomSessionRepository;
 import sg.dm.pp2.chatServer.repository.ChatRoomUserRepository;
+import sg.dm.pp2.entity.StudentInfo;
+import sg.dm.pp2.entity.impl.CustomMultipartFile;
 import sg.dm.pp2.exception.NotFoundException;
+import sg.dm.pp2.repository.StudentInfoRepository;
+import sg.dm.pp2.service.S3Upload;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,16 +38,56 @@ public class ChatServiceImpl implements ChatService {
     private ChatRoomSessionRepository chatRoomSessionRepository;
     @Autowired
     private ChatRoomUserRepository chatRoomUserRepository;
+    @Autowired
+    private S3Upload s3Upload;
+    @Autowired
+    private StudentInfoRepository studentInfoRepository;
 
     @Override
-    public String saveMessageAndReturnSessionId(ChatMessageDTO message) {
+    public String saveMessageAndReturnSessionId(ChatMessageDTO message){
         Optional<ChatroomSessionTable> chatroomSessionTableOptional = chatRoomSessionRepository.findByChatroomUid(message.getRoomUid());
         if (chatroomSessionTableOptional.isPresent()) {
+            String contentToTransfer = "";
+            switch (message.getTypeUid()){
+                case 1:
+                    contentToTransfer = message.getMessage();
+                    break;
+                case 2:
+//                    String fileBase64 = message.getMessage();
+//                    Base64.Decoder decoder = Base64.getDecoder();
+//                    byte[] decodedBytes = decoder.decode(fileBase64.getBytes());
+//                    log.info("Bytecode : " + decodedBytes);
+//                    CustomMultipartFile customMultipartFile = new CustomMultipartFile(decodedBytes);
+//                    log.info("size: " + customMultipartFile.getSize());
+//                    try {
+//                        contentToTransfer = s3Upload.upload(customMultipartFile);
+//                    } catch (IOException e) {
+//                        throw new RuntimeException(e);
+//                    }
+                    contentToTransfer = message.getMessage();
+                    break;
+                case 3:
+                    contentToTransfer += "안녕하세요!";
+                    break;
+                case 4:
+                    contentToTransfer += "반가워요!";
+                    break;
+                case 5:
+                    contentToTransfer += "밥약하고 싶어요!";
+                    break;
+                case 6:
+                    contentToTransfer += "좋아요!";
+                    break;
+                default:
+                    throw new NotFoundException("MESSAGE_TYPE_NOT_FOUND");
+            }
+            message.setMessage(contentToTransfer);
             //메세지 저장
             ChatTable chatTable = ChatTable.builder()
                     .chatroomUid(message.getRoomUid())
                     .userUid(message.getWriterUid())
-                    .message(message.getMessage())
+                    .message(contentToTransfer)
+                    .typeUid(message.getTypeUid())
                     .registeredDatetime(LocalDateTime.now())
                     .build();
             chatRepository.save(chatTable);
@@ -103,6 +153,23 @@ public class ChatServiceImpl implements ChatService {
                     .message(null)
                     .build();
             return lastMessageVO;
+        }
+    }
+
+    @Override
+    public List<MessageVO> getAllMessage(int chatroomUid, Pageable pageable){
+        List<ChatTable> chatTableList = chatRepository.findAllByChatroomUidOrderByChatUidDesc(chatroomUid, pageable);
+        if(!chatTableList.isEmpty()){
+            List<MessageVO> messageVOList = chatTableList.stream().map(x -> MessageVO.builder()
+                        .writerUid(x.getUserUid())
+                        .message(x.getMessage())
+                        .build())
+                    .collect(Collectors.toList());
+
+            return messageVOList;
+        }
+        else{
+            return null; //TODO : 채팅이 하나도 없으면 뭘 리턴해야할까??
         }
     }
 
