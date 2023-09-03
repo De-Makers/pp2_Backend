@@ -3,13 +3,18 @@ package sg.dm.pp2.chatServer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import sg.dm.pp2.chatServer.VO.ChatRoomVO;
 import sg.dm.pp2.chatServer.VO.LastMessageVO;
 import sg.dm.pp2.chatServer.VO.MessageVO;
 import sg.dm.pp2.chatServer.VO.ReadCheckVO;
+import sg.dm.pp2.service.S3Upload;
 import sg.dm.pp2.util.TokenAuthUtil;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -19,6 +24,11 @@ public class ChatRoomController {
     private TokenAuthUtil tokenAuthUtil;
     @Autowired
     private ChatService chatService;
+    @Autowired
+    private S3Upload s3Upload;
+
+    private final SimpMessagingTemplate template;
+
 
     @GetMapping("/chat/list")
     public List<ChatRoomVO> getChatRoomList(@RequestHeader("Authorization") String token){
@@ -42,6 +52,19 @@ public class ChatRoomController {
     @GetMapping("/chat/message/all/{chatroom_uid}")
     public List<MessageVO> getAllMessage(@PathVariable(value = "chatroom_uid") int chatroomUid, Pageable pageable){
         return chatService.getAllMessage(chatroomUid, pageable);
+    }
+
+    @RequestMapping(value = "/chat/message/image", method = RequestMethod.POST
+            ,consumes = {MediaType.APPLICATION_JSON_VALUE ,MediaType.MULTIPART_FORM_DATA_VALUE}
+    )
+    public void chatImageMessage(
+            @RequestPart("image") MultipartFile multipartFile,
+            @RequestPart("data") ChatMessageDTO message
+    ) throws IllegalStateException, IOException {
+        String url = s3Upload.upload(multipartFile);
+        message.setMessage(url);
+        String sessionId = chatService.saveMessageAndReturnSessionId(message);
+        template.convertAndSend("/sub/chat/room/" + sessionId, message);
     }
 
 

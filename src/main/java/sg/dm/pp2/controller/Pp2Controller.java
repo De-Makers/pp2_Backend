@@ -2,6 +2,7 @@ package sg.dm.pp2.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -18,12 +19,14 @@ import sg.dm.pp2.service.email.EmailQueryService;
 import sg.dm.pp2.service.text.TextTableService;
 import sg.dm.pp2.service.user.PpRegisterStateService;
 import sg.dm.pp2.service.user.UserService;
+import sg.dm.pp2.service.vo.RankVO;
 import sg.dm.pp2.service.vo.RegisterStateVO;
 import sg.dm.pp2.service.vo.TestVO;
 import sg.dm.pp2.service.vo.TextTableVO;
 import sg.dm.pp2.util.TokenAuthUtil;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -65,6 +68,18 @@ public class Pp2Controller {
         return ppRegisterStateService.getRegisterState(userUid);
     }
 
+    @PostMapping("/pp/deactivate")
+    public void userDeactivate(@RequestHeader("Authorization") String token){
+        Integer userUid = tokenAuthUtil.checkFullBearerUserTokenAndReturnUserUid(token);
+        userService.userDeactivate(userUid);
+    }
+
+    @GetMapping("/pp/rank")
+    public List<RankVO> getRank(@RequestHeader("Authorization") String token, Pageable pageable){
+        Integer userUid = tokenAuthUtil.checkFullBearerUserTokenAndReturnUserUid(token);
+        return userService.getRankList(userUid, pageable);
+    }
+
 
     //TODO : --------------FOR TEST-----------------------
     @Autowired
@@ -89,10 +104,7 @@ public class Pp2Controller {
         return tokenService.tokenTestService(userUid);
     }
 
-    @Autowired
-    ChatService chatService;
 
-    private final SimpMessagingTemplate template;
 
 //    @PostMapping("/chat/message/image")
 //    public void messageImage(@RequestBody ChatMessageDTO message){
@@ -100,21 +112,9 @@ public class Pp2Controller {
 //        template.convertAndSend("/sub/chat/room/" + sessionId, message);
 //    }
 
-    @Autowired
-    private S3Upload s3Upload;
 
-    @RequestMapping(value = "/chat/message/image", method = RequestMethod.POST
-            ,consumes = {MediaType.APPLICATION_JSON_VALUE ,MediaType.MULTIPART_FORM_DATA_VALUE}
-    )
-    public void chatImageMessage(
-            @RequestPart("image") MultipartFile multipartFile,
-            @RequestPart("data") ChatMessageDTO message
-    ) throws IllegalStateException, IOException {
-        String url = s3Upload.upload(multipartFile);
-        message.setMessage(url);
-        String sessionId = chatService.saveMessageAndReturnSessionId(message);
-        template.convertAndSend("/sub/chat/room/" + sessionId, message);
-    }
+
+
 
 
 }

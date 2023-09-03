@@ -7,9 +7,13 @@ import sg.dm.pp2.chatServer.ChatRoomDTO;
 import sg.dm.pp2.chatServer.entity.ChatroomSessionTable;
 import sg.dm.pp2.chatServer.entity.ChatroomUserTable;
 import sg.dm.pp2.chatServer.repository.ChatRoomUserRepository;
+import sg.dm.pp2.entity.PpRank;
+import sg.dm.pp2.entity.PpRegisterState;
 import sg.dm.pp2.entity.StudentInfo;
 import sg.dm.pp2.exception.NotFoundException;
 import sg.dm.pp2.chatServer.repository.ChatRoomSessionRepository;
+import sg.dm.pp2.repository.PpRankRepository;
+import sg.dm.pp2.repository.PpRegisterStateRepository;
 import sg.dm.pp2.service.vo.MyProfileVO;
 import sg.dm.pp2.service.vo.ProfileListVO;
 import sg.dm.pp2.util.StudentIdUtil;
@@ -32,6 +36,10 @@ public class StudentServiceImpl implements StudentService {
     private ChatRoomSessionRepository chatRoomSessionRepository;
     @Autowired
     private ChatRoomUserRepository chatRoomUserRepository;
+    @Autowired
+    private PpRegisterStateRepository ppRegisterStateRepository;
+    @Autowired
+    private PpRankRepository ppRankRepository;
 
     @Override
     public void saveFirstProfileForStudentInfo(
@@ -82,8 +90,9 @@ public class StudentServiceImpl implements StudentService {
                 chatRoomUserRepository.save(chatroomUserTable2);
             }
         }
-        //------------------------------------------------------
+        //----------------------------------------------------------
 
+        //student 정보 저장
         studentInfoRepository.updateStudentInfoByUserUid(
                 userUid = userUid,
                 studentId = studentId,
@@ -93,6 +102,37 @@ public class StudentServiceImpl implements StudentService {
                 message = message,
                 url = url
         );
+
+        //reg_state to 2
+        Optional<PpRegisterState> ppRegisterStateOptional = ppRegisterStateRepository.findByUserUid(userUid);
+        PpRegisterState ppRegisterState;
+        if(ppRegisterStateOptional.isPresent()){
+            ppRegisterState = ppRegisterStateOptional.get();
+            ppRegisterState.setStateId(2);
+        }
+        else{
+            ppRegisterState = PpRegisterState.builder()
+                    .userUid(userUid)
+                    .stateId(2)
+                    .build();
+        }
+        ppRegisterStateRepository.save(ppRegisterState);
+
+        //increase member_count in rank table
+        Optional<PpRank> ppRankOptional = ppRankRepository.findByUnivUidAndStudentIdPivot(univUid, studentIdPivot);
+        PpRank ppRank;
+        if(ppRankOptional.isPresent()){
+            ppRank = ppRankOptional.get();
+            ppRank.setMemberCount(ppRank.getMemberCount()+1);
+        }
+        else{
+            ppRank = PpRank.builder()
+                    .univUid(univUid)
+                    .studentIdPivot(studentIdPivot)
+                    .memberCount(1)
+                    .build();
+        }
+        ppRankRepository.save(ppRank);
 
     }
 

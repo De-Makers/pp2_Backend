@@ -161,8 +161,11 @@ public class ChatServiceImpl implements ChatService {
         List<ChatTable> chatTableList = chatRepository.findAllByChatroomUidOrderByChatUidDesc(chatroomUid, pageable);
         if(!chatTableList.isEmpty()){
             List<MessageVO> messageVOList = chatTableList.stream().map(x -> MessageVO.builder()
-                        .writerUid(x.getUserUid())
-                        .message(x.getMessage())
+                            .chatUid(x.getChatUid())
+                            .writerUid(x.getUserUid())
+                            .message(x.getMessage())
+                            .typeUid(x.getTypeUid())
+                            .registeredDatetime(x.getRegisteredDatetime())
                         .build())
                     .collect(Collectors.toList());
 
