@@ -13,6 +13,12 @@ public interface UserService {
             Integer platform
     );
 
+    JWTVO doSignIn(
+            String snsAccountUid,
+            String token,
+            Integer platform
+    );
+
     void userDeactivate(int userUid);
 
     List<RankVO> getRankList(int userUid, Pageable pageable);

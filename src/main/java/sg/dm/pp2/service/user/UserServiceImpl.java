@@ -70,6 +70,29 @@ public class UserServiceImpl implements UserService {
         return jwtVO;
     }
 
+    @Override
+    public JWTVO doSignIn(
+            String snsAccountUid,
+            String token,
+            Integer platform
+    ){
+        Optional<SnsLogin> snsLoginOptional = snsLoginRepository.findBySnsAccountUid(snsAccountUid);
+        if(snsLoginOptional.isPresent()){
+            int userUid = snsLoginOptional.get().getUserUid();
+            String Access = tokenService.tokenTestService(userUid, true);
+            String Refresh = tokenService.tokenTestService(userUid, false);
+            JWTVO jwtVO = new JWTVO().builder()
+                    .Authorization(Access)
+                    .Refresh(Refresh)
+                    .build();
+            return jwtVO;
+        }
+        else{
+            throw new NotFoundException("USER_NOT_FOUND");
+        }
+
+    }
+
     private Integer checkInsertSnsLoginAndUpdateTokenAndReturnUserUid(String snsAccountUid, String token, Integer platform) {
         Optional<SnsLogin> snsLoginOptional = snsLoginRepository.findBySnsAccountUid(snsAccountUid);
         if (snsLoginOptional.isPresent()) { // if already signed up

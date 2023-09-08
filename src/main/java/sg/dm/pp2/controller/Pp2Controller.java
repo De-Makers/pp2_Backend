@@ -50,6 +50,19 @@ public class Pp2Controller {
         );
     }
 
+    @PostMapping("/auth/signin/{kakao_uid}/{platform}")
+    public JWTVO postSignIn(
+            @RequestBody SignupTokenDTO signupTokenDTO,
+            @PathVariable("kakao_uid") String kakaoUid,
+            @PathVariable("platform") Integer platform
+    ) {
+        return userService.doSignIn(
+                kakaoUid,
+                signupTokenDTO.getToken(),
+                platform
+        );
+    }
+
     @GetMapping("/public/text/{text_uid}")
     public TextTableVO getText(@PathVariable(value = "text_Uid") String textUid) {
         return textTableService.getText(textUid);
