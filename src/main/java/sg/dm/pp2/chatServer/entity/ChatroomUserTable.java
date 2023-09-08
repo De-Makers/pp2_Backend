@@ -27,4 +27,25 @@ public class ChatroomUserTable {
 
     @Column(columnDefinition = "TINYINT(1)")
     private boolean readCheck;
+
+    @Column(nullable = true)
+    private int mon;
+
+    @Column(nullable = true)
+    private int tues;
+
+    @Column(nullable = true)
+    private int wed;
+
+    @Column(nullable = true)
+    private int thur;
+
+    @Column(nullable = true)
+    private int fri;
+
+    @Column(nullable = true)
+    private int sat;
+
+    @Column(nullable = true)
+    private int sun;
 }

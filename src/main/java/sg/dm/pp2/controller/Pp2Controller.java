@@ -3,29 +3,22 @@ package sg.dm.pp2.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.MediaType;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import sg.dm.pp2.chatServer.ChatMessageDTO;
-import sg.dm.pp2.chatServer.ChatService;
 import sg.dm.pp2.controller.dto.FCMNotificationDTO;
-import sg.dm.pp2.controller.dto.PostStudentProfileDTO;
+import sg.dm.pp2.controller.dto.SignupTokenDTO;
 import sg.dm.pp2.controller.dto.TestDTO;
 import sg.dm.pp2.service.FCMService;
-import sg.dm.pp2.service.S3Upload;
 import sg.dm.pp2.service.TokenService;
 import sg.dm.pp2.service.email.EmailQueryService;
 import sg.dm.pp2.service.text.TextTableService;
 import sg.dm.pp2.service.user.PpRegisterStateService;
 import sg.dm.pp2.service.user.UserService;
+import sg.dm.pp2.service.vo.JWTVO;
 import sg.dm.pp2.service.vo.RankVO;
 import sg.dm.pp2.service.vo.RegisterStateVO;
-import sg.dm.pp2.service.vo.TestVO;
 import sg.dm.pp2.service.vo.TextTableVO;
 import sg.dm.pp2.util.TokenAuthUtil;
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -45,14 +38,14 @@ public class Pp2Controller {
     private TokenAuthUtil tokenAuthUtil;
 
     @PostMapping("/auth/signup/{kakao_uid}/{platform}")
-    public void postSignUp(
-            @RequestParam("token") String kakaoToken,
+    public JWTVO postSignUp(
+            @RequestBody SignupTokenDTO signupTokenDTO,
             @PathVariable("kakao_uid") String kakaoUid,
             @PathVariable("platform") Integer platform
     ) {
-        userService.doSignUp(
+        return userService.doSignUp(
                 kakaoUid,
-                kakaoToken,
+                signupTokenDTO.getToken(),
                 platform
         );
     }
@@ -101,7 +94,7 @@ public class Pp2Controller {
     }
     @PostMapping("/test/auth/signup")
     public String postSignUpAndReturnToken(@RequestHeader Integer userUid) {
-        return tokenService.tokenTestService(userUid);
+        return tokenService.tokenTestService(userUid, true);
     }
 
 
@@ -111,9 +104,6 @@ public class Pp2Controller {
 //        String sessionId = chatService.saveMessageAndReturnSessionId(message);
 //        template.convertAndSend("/sub/chat/room/" + sessionId, message);
 //    }
-
-
-
 
 
 

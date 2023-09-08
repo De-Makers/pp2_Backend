@@ -1,16 +1,16 @@
 package sg.dm.pp2.chatServer;
 
 import lombok.RequiredArgsConstructor;
+import org.hibernate.query.sqm.tree.from.SqmCrossJoin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import sg.dm.pp2.chatServer.VO.ChatRoomVO;
-import sg.dm.pp2.chatServer.VO.LastMessageVO;
-import sg.dm.pp2.chatServer.VO.MessageVO;
-import sg.dm.pp2.chatServer.VO.ReadCheckVO;
+import sg.dm.pp2.chatServer.DTO.ChatMessageDTO;
+import sg.dm.pp2.chatServer.DTO.ScheduleDTO;
+import sg.dm.pp2.chatServer.VO.*;
 import sg.dm.pp2.service.S3Upload;
 import sg.dm.pp2.util.TokenAuthUtil;
 
@@ -35,22 +35,22 @@ public class ChatRoomController {
         Integer userUid = tokenAuthUtil.checkFullBearerUserTokenAndReturnUserUid(token);
         return chatService.getChatRoomUidList(userUid);
     }
-    @GetMapping("/chat/message/last/check/{chatroom_uid}")
+    @GetMapping("/chat/message/last/check/{chatroomUid}")
     public ReadCheckVO getLastCheck(
             @RequestHeader("Authorization") String token,
-            @PathVariable(value = "chatroom_uid") int chatroomUid
+            @PathVariable(value = "chatroomUid") int chatroomUid
     ){
         Integer userUid = tokenAuthUtil.checkFullBearerUserTokenAndReturnUserUid(token);
         return chatService.getReadCheck(chatroomUid, userUid);
     }
 
-    @GetMapping("/chat/message/last/{chatroom_uid}")
-    public LastMessageVO getLastMessage(@PathVariable(value = "chatroom_uid") int chatroomUid){
+    @GetMapping("/chat/message/last/{chatroomUid}")
+    public LastMessageVO getLastMessage(@PathVariable(value = "chatroomUid") int chatroomUid){
         return chatService.getLastMessage(chatroomUid);
     }
 
-    @GetMapping("/chat/message/all/{chatroom_uid}")
-    public List<MessageVO> getAllMessage(@PathVariable(value = "chatroom_uid") int chatroomUid, Pageable pageable){
+    @GetMapping("/chat/message/all/{chatroomUid}")
+    public List<MessageVO> getAllMessage(@PathVariable(value = "chatroomUid") int chatroomUid, Pageable pageable){
         return chatService.getAllMessage(chatroomUid, pageable);
     }
 
@@ -66,6 +66,28 @@ public class ChatRoomController {
         String sessionId = chatService.saveMessageAndReturnSessionId(message);
         template.convertAndSend("/sub/chat/room/" + sessionId, message);
     }
+
+    @PostMapping("/pp/chat/{chatroomUid}/schedule/init")
+    public ScheduleVO initSchedule(@RequestHeader("Authorization") String token, @PathVariable(value = "chatroomUid") int chatroomUid){
+        Integer userUid = tokenAuthUtil.checkFullBearerUserTokenAndReturnUserUid(token);
+        return chatService.initSchedule(chatroomUid, userUid);
+    }
+
+    @GetMapping("/pp/chat/{chatroomUid}/schedule")
+    public ScheduleVO getSchedule (@RequestHeader("Authorization") String token, @PathVariable(value = "chatroomUid") int chatroomUid){
+        Integer userUid = tokenAuthUtil.checkFullBearerUserTokenAndReturnUserUid(token);
+        return chatService.getSchedule(chatroomUid, userUid);
+    }
+    @PostMapping("/pp/chat/{chatroomUid}/schedule")
+    public ScheduleVO postSchedule(
+            @RequestHeader("Authorization") String token,
+            @PathVariable(value = "chatroomUid") int chatroomUid,
+            @RequestBody ScheduleDTO scheduleDTO) {
+        Integer userUid = tokenAuthUtil.checkFullBearerUserTokenAndReturnUserUid(token);
+        return chatService.postSchedule(chatroomUid, userUid, scheduleDTO);
+    }
+
+
 
 
     //TODO: --------------------FOR TEST------------------------

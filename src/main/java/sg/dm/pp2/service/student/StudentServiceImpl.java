@@ -3,7 +3,7 @@ package sg.dm.pp2.service.student;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import sg.dm.pp2.chatServer.ChatRoomDTO;
+import sg.dm.pp2.chatServer.DTO.ChatRoomDTO;
 import sg.dm.pp2.chatServer.entity.ChatroomSessionTable;
 import sg.dm.pp2.chatServer.entity.ChatroomUserTable;
 import sg.dm.pp2.chatServer.repository.ChatRoomUserRepository;

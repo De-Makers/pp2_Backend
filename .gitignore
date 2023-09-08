@@ -7,6 +7,8 @@ build/
 application.properties
 src/main/resources/application.properties
 src/main/resources/firebase/demakers-pp2-firebase-adminsdk-xg59z-cb040f4331.json
+.env.dev
+dockerDB/
 
 ### STS ###
 .apt_generated

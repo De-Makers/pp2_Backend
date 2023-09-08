@@ -12,7 +12,7 @@ public interface TokenService {
 
     String tokenToUserUidStringService(String token);
 
-    String tokenTestService(Integer userUid);
+    String tokenTestService(Integer userUid, boolean access);
 
     List<UnivInfoVO> getUnivInfoList();
 }

@@ -1,10 +1,9 @@
 package sg.dm.pp2.chatServer;
 
 import org.springframework.data.domain.Pageable;
-import sg.dm.pp2.chatServer.VO.ChatRoomVO;
-import sg.dm.pp2.chatServer.VO.LastMessageVO;
-import sg.dm.pp2.chatServer.VO.MessageVO;
-import sg.dm.pp2.chatServer.VO.ReadCheckVO;
+import sg.dm.pp2.chatServer.DTO.ChatMessageDTO;
+import sg.dm.pp2.chatServer.DTO.ScheduleDTO;
+import sg.dm.pp2.chatServer.VO.*;
 
 import java.util.List;
 
@@ -18,6 +17,12 @@ public interface ChatService {
     LastMessageVO getLastMessage(int chatroomUid);
 
     List<MessageVO> getAllMessage(int chatroomUid, Pageable pageable);
+
+    ScheduleVO initSchedule(int chatroomUid, int userUid);
+
+    ScheduleVO getSchedule(int chatroomUid, int userUid);
+
+    ScheduleVO postSchedule(int chatroomUid, int userUid, ScheduleDTO scheduleDTO);
 
 
 

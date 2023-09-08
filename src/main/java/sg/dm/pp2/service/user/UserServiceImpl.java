@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import sg.dm.pp2.entity.*;
 import sg.dm.pp2.exception.NotFoundException;
 import sg.dm.pp2.repository.*;
+import sg.dm.pp2.service.TokenService;
+import sg.dm.pp2.service.vo.JWTVO;
 import sg.dm.pp2.service.vo.RankVO;
 
 import java.time.LocalDateTime;
@@ -27,17 +29,28 @@ public class UserServiceImpl implements UserService {
     private PpRegisterStateRepository ppRegisterStateRepository;
     @Autowired
     private PpRankRepository ppRankRepository;
+    @Autowired
+    TokenService tokenService;
 
 
 
     @Override
-    public void doSignUp(
+    public JWTVO doSignUp(
             String snsAccountUid,
-            String kakaoToken,
+            String token,
             Integer platform
     ) {
-        Integer userUid = checkInsertSnsLoginAndUpdateTokenAndReturnUserUid(snsAccountUid, kakaoToken, platform);
+        Integer userUid = checkInsertSnsLoginAndUpdateTokenAndReturnUserUid(snsAccountUid, token, platform);
         insertNewUserInfoStudentInfo(userUid);
+
+        String Access = tokenService.tokenTestService(userUid, true);
+        String Refresh = tokenService.tokenTestService(userUid, false);
+        JWTVO jwtVO = new JWTVO().builder()
+                .Authorization(Access)
+                .Refresh(Refresh)
+                .build();
+
+
 
         //reg_state to 0
         Optional<PpRegisterState> ppRegisterStateOptional = ppRegisterStateRepository.findByUserUid(userUid);
@@ -53,16 +66,18 @@ public class UserServiceImpl implements UserService {
                     .build();
         }
         ppRegisterStateRepository.save(ppRegisterState);
+
+        return jwtVO;
     }
 
-    private Integer checkInsertSnsLoginAndUpdateTokenAndReturnUserUid(String snsAccountUid, String kakaoToken, Integer platform) {
+    private Integer checkInsertSnsLoginAndUpdateTokenAndReturnUserUid(String snsAccountUid, String token, Integer platform) {
         Optional<SnsLogin> snsLoginOptional = snsLoginRepository.findBySnsAccountUid(snsAccountUid);
         if (snsLoginOptional.isPresent()) { // if already signed up
             SnsLogin snsLoginPresent = snsLoginOptional.get();
             String presentToken = snsLoginPresent.getToken();
-            if (!presentToken.contentEquals(kakaoToken)) {
+            if (!presentToken.contentEquals(token)) {
                 // update token if varies
-                snsLoginPresent.setToken(kakaoToken);
+                snsLoginPresent.setToken(token);
                 snsLoginRepository.save(snsLoginPresent);
             }
             return snsLoginPresent.getUserUid();
@@ -71,7 +86,7 @@ public class UserServiceImpl implements UserService {
             SnsLogin newSnsLogin = new SnsLogin();
             newSnsLogin.setPlatformUid(platform);
             newSnsLogin.setSnsAccountUid(snsAccountUid);
-            newSnsLogin.setToken(kakaoToken);
+            newSnsLogin.setToken(token);
             SnsLogin savedLogin = snsLoginRepository.save(newSnsLogin);
             return savedLogin.getUserUid();
         }

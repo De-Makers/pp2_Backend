@@ -1,10 +1,12 @@
-package sg.dm.pp2.chatServer;
+package sg.dm.pp2.chatServer.DTO;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class ChatMessageDTO {
     private int roomUid;
     private int writerUid;

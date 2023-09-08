@@ -1,6 +1,7 @@
-package sg.dm.pp2.chatServer;
+package sg.dm.pp2.chatServer.DTO;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.web.socket.WebSocketSession;
 
