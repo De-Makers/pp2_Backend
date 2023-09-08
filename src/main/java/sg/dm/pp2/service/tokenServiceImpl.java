@@ -12,6 +12,7 @@ import sg.dm.pp2.repository.UnivInfoRepository;
 import sg.dm.pp2.service.vo.TestVO;
 import sg.dm.pp2.service.vo.UnivEmailDomainDetailVO;
 import sg.dm.pp2.service.vo.UnivInfoVO;
+import sg.dm.pp2.util.TokenAuthUtil;
 
 import java.util.List;
 import java.util.Optional;
@@ -48,8 +49,13 @@ public class tokenServiceImpl implements TokenService {
     }
 
     @Override
-    public String tokenTestService(Integer userUid) {
-        return jwtHelper.generateTokenByUserUid(userUid);
+    public String tokenTestService(Integer userUid, boolean access) {
+        if(access == true) {
+            return jwtHelper.generateTokenByUserUid(userUid, TokenAuthUtil.ACCESS_JWT_TOKEN_VALIDITY);
+        }
+        else{
+            return jwtHelper.generateTokenByUserUid(userUid, TokenAuthUtil.REFRESH_JWT_TOKEN_VALIDITY);
+        }
     }
 
     @Override

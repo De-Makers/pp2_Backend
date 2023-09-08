@@ -1,4 +1,4 @@
-package sg.dm.pp2.chatServer.entity;
+package sg.dm.pp2.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -7,32 +7,24 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDateTime;
-
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-@Table(name="chat_table")
+@Table(name="pp_rank")
 @Entity
 @SuperBuilder
-public class ChatTable {
+public class PpRank {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int chatUid;
+    private int rankUid;
 
     @Column
-    private int chatroomUid;
+    private int univUid;
 
     @Column
-    private int userUid;
+    private String studentIdPivot;
 
     @Column
-    private String message;
-
-    @Column
-    private int typeUid;
-
-    @Column
-    private LocalDateTime registeredDatetime;
+    private int memberCount;
 }

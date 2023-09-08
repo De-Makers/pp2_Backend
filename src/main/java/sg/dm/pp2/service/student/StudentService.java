@@ -10,7 +10,8 @@ public interface StudentService {
             Integer userUid,
             String studentId,
             String name,
-            String message
+            String message,
+            String url
     );
 
     MyProfileVO getMyProfile(int userUid);

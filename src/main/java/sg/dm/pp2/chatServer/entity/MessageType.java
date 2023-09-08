@@ -7,32 +7,18 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDateTime;
-
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-@Table(name="chat_table")
+@Table(name="message_type")
 @Entity
 @SuperBuilder
-public class ChatTable {
+public class MessageType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int chatUid;
-
-    @Column
-    private int chatroomUid;
-
-    @Column
-    private int userUid;
-
-    @Column
-    private String message;
-
-    @Column
     private int typeUid;
 
     @Column
-    private LocalDateTime registeredDatetime;
+    private String messageType;
 }

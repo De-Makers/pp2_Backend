@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+import sg.dm.pp2.chatServer.DTO.ChatMessageDTO;
 
 @Controller
 @RequiredArgsConstructor
@@ -24,8 +25,15 @@ public class StompChatController {
 //    }
 
     @MessageMapping(value = "/chat/message")
-    public void message(ChatMessageDTO message){
+    public void messageText(ChatMessageDTO message){
         String sessionId = chatService.saveMessageAndReturnSessionId(message);
         template.convertAndSend("/sub/chat/room/" + sessionId, message);
     }
+
+//    @MessageMapping(value = "/chat/message/image")
+//    public void messageImage(ChatMessageDTO message){
+//        String sessionId = chatService.saveMessageAndReturnSessionId(message);
+//        template.convertAndSend("/sub/chat/room/" + sessionId, message);
+//    }
+
 }

@@ -42,4 +42,7 @@ public class StudentInfo {
 
     @Column(nullable = true)
     private String studentCardImage;
+
+    @Column(nullable = true)
+    private String profileImageUrl;
 }

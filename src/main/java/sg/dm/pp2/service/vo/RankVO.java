@@ -1,7 +1,5 @@
 package sg.dm.pp2.service.vo;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,8 +9,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
-public class UnivInfoVO {
+public class RankVO {
+    private int rankUid;
     private int univUid;
-    private String univName;
+    private String studentIdPivot;
+    private int memberCount;
 }
-

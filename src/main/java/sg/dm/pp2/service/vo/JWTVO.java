@@ -1,7 +1,5 @@
 package sg.dm.pp2.service.vo;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
-public class RegisterStateVO {
-    private Integer stateId;
+public class JWTVO {
+    private String Authorization;
+    private String Refresh;
 }

@@ -3,13 +3,17 @@ package sg.dm.pp2.service.student;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import sg.dm.pp2.chatServer.ChatRoomDTO;
+import sg.dm.pp2.chatServer.DTO.ChatRoomDTO;
 import sg.dm.pp2.chatServer.entity.ChatroomSessionTable;
 import sg.dm.pp2.chatServer.entity.ChatroomUserTable;
 import sg.dm.pp2.chatServer.repository.ChatRoomUserRepository;
+import sg.dm.pp2.entity.PpRank;
+import sg.dm.pp2.entity.PpRegisterState;
 import sg.dm.pp2.entity.StudentInfo;
 import sg.dm.pp2.exception.NotFoundException;
 import sg.dm.pp2.chatServer.repository.ChatRoomSessionRepository;
+import sg.dm.pp2.repository.PpRankRepository;
+import sg.dm.pp2.repository.PpRegisterStateRepository;
 import sg.dm.pp2.service.vo.MyProfileVO;
 import sg.dm.pp2.service.vo.ProfileListVO;
 import sg.dm.pp2.util.StudentIdUtil;
@@ -32,13 +36,18 @@ public class StudentServiceImpl implements StudentService {
     private ChatRoomSessionRepository chatRoomSessionRepository;
     @Autowired
     private ChatRoomUserRepository chatRoomUserRepository;
+    @Autowired
+    private PpRegisterStateRepository ppRegisterStateRepository;
+    @Autowired
+    private PpRankRepository ppRankRepository;
 
     @Override
     public void saveFirstProfileForStudentInfo(
             Integer userUid,
             String studentId,
             String name,
-            String message
+            String message,
+            String url
     ) {
         StudentInfo studentInfo = studentInfoRepository.findByUserUid(userUid).get();
         StudentIdUtil.YearAndPivot yearAndPivot = studentIdUtil.getYearAndPivotFromStudentIdAndUnivUid(studentId, studentInfo.getUnivUid());
@@ -51,7 +60,7 @@ public class StudentServiceImpl implements StudentService {
         long pivotCount = studentInfoList.stream().count();
         log.info("pivotCount : " + pivotCount);
 
-        //같은 pivot을 같은 사람이 있으면
+        //pivot이 같은 사람이 있으면
         if(pivotCount > 0) {
             //같은 사람들 수만큼
             for(int i=0;i<pivotCount;i++){
@@ -81,16 +90,49 @@ public class StudentServiceImpl implements StudentService {
                 chatRoomUserRepository.save(chatroomUserTable2);
             }
         }
-        //------------------------------------------------------
+        //----------------------------------------------------------
 
+        //student 정보 저장
         studentInfoRepository.updateStudentInfoByUserUid(
                 userUid = userUid,
                 studentId = studentId,
                 studentIdYear = studentIdYear,
                 studentIdPivot = studentIdPivot,
                 name = name,
-                message = message
+                message = message,
+                url = url
         );
+
+        //reg_state to 2
+        Optional<PpRegisterState> ppRegisterStateOptional = ppRegisterStateRepository.findByUserUid(userUid);
+        PpRegisterState ppRegisterState;
+        if(ppRegisterStateOptional.isPresent()){
+            ppRegisterState = ppRegisterStateOptional.get();
+            ppRegisterState.setStateId(2);
+        }
+        else{
+            ppRegisterState = PpRegisterState.builder()
+                    .userUid(userUid)
+                    .stateId(2)
+                    .build();
+        }
+        ppRegisterStateRepository.save(ppRegisterState);
+
+        //increase member_count in rank table
+        Optional<PpRank> ppRankOptional = ppRankRepository.findByUnivUidAndStudentIdPivot(univUid, studentIdPivot);
+        PpRank ppRank;
+        if(ppRankOptional.isPresent()){
+            ppRank = ppRankOptional.get();
+            ppRank.setMemberCount(ppRank.getMemberCount()+1);
+        }
+        else{
+            ppRank = PpRank.builder()
+                    .univUid(univUid)
+                    .studentIdPivot(studentIdPivot)
+                    .memberCount(1)
+                    .build();
+        }
+        ppRankRepository.save(ppRank);
 
     }
 
@@ -102,6 +144,7 @@ public class StudentServiceImpl implements StudentService {
                     .studentID(studentInfoOptional.get().getStudentId())
                     .name(studentInfoOptional.get().getName())
                     .message(studentInfoOptional.get().getMessage())
+                    .imgUrl(studentInfoOptional.get().getProfileImageUrl())
                     .build();
             return myProfileVO;
         }
@@ -125,7 +168,8 @@ public class StudentServiceImpl implements StudentService {
                             .studentId(x.getStudentId())
                             .studentIdYear(x.getStudentIdYear())
                             .studentIdPivot(x.getStudentIdPivot())
-                            .message((x.getMessage()))
+                            .message(x.getMessage())
+                            .imgUrl(x.getProfileImageUrl())
                             .build())
                     .collect(Collectors.toList());
 
@@ -148,6 +192,7 @@ public class StudentServiceImpl implements StudentService {
                     .studentIdYear(studentInfoOptional.get().getStudentIdYear())
                     .studentIdPivot(studentInfoOptional.get().getStudentIdPivot())
                     .message(studentInfoOptional.get().getMessage())
+                    .imgUrl(studentInfoOptional.get().getProfileImageUrl())
                     .build();
 
             return profileListVO;

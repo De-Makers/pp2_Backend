@@ -1,0 +1,76 @@
+version: "3.7"
+services:
+  db:
+    image: mysql
+    container_name: spring-db
+    env_file:
+      - .env.dev
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./dockerDB:/app
+#      - ./dockerDB/mysql/data:/var/lib/mysql
+  spring-rest-api:
+    container_name: spring-rest-api
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://spring-db:3306/pp2?useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: "root"
+      SPRING_DATASOURCE_PASSWORD: "tjrcks0505"
+#      - SPRING_PROFILES_ACTIVE=dev
+    depends_on:
+      - db
+#    volumes:
+#      - ./wait-for-it.sh:/app/wait-for-it.sh
+#    command:
+#      - sh -c "/app/wait-for-it.sh db:3306 -t 60 -- java -jar /app/app.jar"
+
+
+
+#version: '3'
+#
+#services:
+#  database:
+#    container_name: mysql_db
+#    image: mysql
+#    restart: unless-stopped
+#    environment:
+#      MYSQL_DATABASE: pp2
+#      MYSQL_ROOT_HOST: '%'
+#      MYSQL_ROOT_PASSWORD: tjrcks0505
+#      TZ: 'Asia/Seoul'
+#    ports:
+#      - "3306:3306"
+#    volumes:
+#      - ./db/mysql/data:/var/lib/mysql
+#      - ./db/mysql/config:/etc/mysql/conf.d
+#    command:
+#      - "mysqld"
+#      - "--character-set-server=utf8mb4"
+#      - "--collation-server=utf8mb4_unicode_ci"
+#    networks:
+#      - test_network
+#
+#  application:
+#    container_name: docker-compose-test
+#    restart: on-failure
+#    build:
+#      context: ./
+#      dockerfile: Dockerfile
+#    ports:
+#      - "8080:8080"
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:mysql://mysql_db:3306/pp2?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul
+#      SPRING_DATASOURCE_USERNAME: "root"
+#      SPRING_DATASOURCE_PASSWORD: "tjrcks0505"
+#    depends_on:
+#      - database
+#    networks:
+#      - test_network
+#
+#networks:
+#  test_network:

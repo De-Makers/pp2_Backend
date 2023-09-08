@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class UnivEmailDomainDetailVO {
     private Integer domainUid;
     private String domain;

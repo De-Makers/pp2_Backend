@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ProfileListVO {
     private Integer userUid;
     private String name;
@@ -19,4 +18,5 @@ public class ProfileListVO {
     private Integer studentIdYear;
     private String studentIdPivot;
     private String message;
+    private String imgUrl;
 }
