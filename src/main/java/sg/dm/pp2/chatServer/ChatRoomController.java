@@ -74,12 +74,12 @@ public class ChatRoomController {
     }
 
     @GetMapping("/pp/chat/{chatroomUid}/schedule")
-    public ScheduleVO getSchedule (@RequestHeader("Authorization") String token, @PathVariable(value = "chatroomUid") int chatroomUid){
+    public List<ScheduleVO> getSchedule (@RequestHeader("Authorization") String token, @PathVariable(value = "chatroomUid") int chatroomUid){
         Integer userUid = tokenAuthUtil.checkFullBearerUserTokenAndReturnUserUid(token);
         return chatService.getSchedule(chatroomUid, userUid);
     }
     @PostMapping("/pp/chat/{chatroomUid}/schedule")
-    public ScheduleVO postSchedule(
+    public List<ScheduleVO> postSchedule(
             @RequestHeader("Authorization") String token,
             @PathVariable(value = "chatroomUid") int chatroomUid,
             @RequestBody ScheduleDTO scheduleDTO) {
