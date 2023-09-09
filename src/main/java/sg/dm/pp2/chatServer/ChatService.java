@@ -20,9 +20,9 @@ public interface ChatService {
 
     ScheduleVO initSchedule(int chatroomUid, int userUid);
 
-    ScheduleVO getSchedule(int chatroomUid, int userUid);
+    List<ScheduleVO> getSchedule(int chatroomUid, int userUid);
 
-    ScheduleVO postSchedule(int chatroomUid, int userUid, ScheduleDTO scheduleDTO);
+    List<ScheduleVO> postSchedule(int chatroomUid, int userUid, ScheduleDTO scheduleDTO);
 
 
 

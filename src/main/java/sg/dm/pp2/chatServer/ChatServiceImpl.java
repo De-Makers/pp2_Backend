@@ -19,6 +19,7 @@ import sg.dm.pp2.repository.StudentInfoRepository;
 import sg.dm.pp2.service.S3Upload;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -205,13 +206,14 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public ScheduleVO getSchedule(int chatroomUid, int userUid){
+    public List<ScheduleVO> getSchedule(int chatroomUid, int userUid){
         boolean[][] user1 = new boolean[8][7];
         boolean[][] user2 = new boolean[8][7];
         int[] dayList1 = new int[7];
         int[] dayList2 = new int [7];
         int[] result = new int[7];
         Arrays.fill(result, 0);
+        int k;
 
         Optional<ChatroomUserTable> chatroomUserTableOptional = chatRoomUserRepository.findByChatroomUidAndUserUid(chatroomUid, userUid);
         if (chatroomUserTableOptional.isPresent()) {
@@ -225,17 +227,44 @@ public class ChatServiceImpl implements ChatService {
         }
         //상대 useruid의 값 받기
         List<ChatroomUserTable> chatroomUserTableList = chatRoomUserRepository.findAllByChatroomUid(chatroomUid);
-        for (int i = 0; i < 2; i++) {
-            if (chatroomUserTableList.get(i).getUserUid() != userUid) {
-                dayList2[0] = chatroomUserTableList.get(i).getMon();
-                dayList2[1] = chatroomUserTableList.get(i).getTues();
-                dayList2[2] = chatroomUserTableList.get(i).getWed();
-                dayList2[3] = chatroomUserTableList.get(i).getThur();
-                dayList2[4] = chatroomUserTableList.get(i).getFri();
-                dayList2[5] = chatroomUserTableList.get(i).getSat();
-                dayList2[6] = chatroomUserTableList.get(i).getSun();
+        for (k = 0; k < 2; k++) {
+            if (chatroomUserTableList.get(k).getUserUid() != userUid) {
+                dayList2[0] = chatroomUserTableList.get(k).getMon();
+                dayList2[1] = chatroomUserTableList.get(k).getTues();
+                dayList2[2] = chatroomUserTableList.get(k).getWed();
+                dayList2[3] = chatroomUserTableList.get(k).getThur();
+                dayList2[4] = chatroomUserTableList.get(k).getFri();
+                dayList2[5] = chatroomUserTableList.get(k).getSat();
+                dayList2[6] = chatroomUserTableList.get(k).getSun();
+                break;
             }
         }
+        List<ScheduleVO> scheduleVOList = new ArrayList<>();
+        scheduleVOList.add(ScheduleVO.builder()
+                .chatroomUid(chatroomUid)
+                .userUid(userUid)
+                .mon(dayList1[0])
+                .tues(dayList1[1])
+                .wed(dayList1[2])
+                .thur(dayList1[3])
+                .fri(dayList1[4])
+                .sat(dayList1[5])
+                .sun(dayList1[6])
+                .build()
+        );
+
+        scheduleVOList.add(ScheduleVO.builder()
+                .chatroomUid(chatroomUid)
+                .userUid(chatroomUserTableList.get(k).getUserUid())
+                .mon(dayList2[0])
+                .tues(dayList2[1])
+                .wed(dayList2[2])
+                .thur(dayList2[3])
+                .fri(dayList2[4])
+                .sat(dayList2[5])
+                .sun(dayList2[6])
+                .build()
+        );
 
         for(int i=0;i<7;i++){
             if(dayList1[i] > 255 || dayList2[i] > 255){
@@ -332,8 +361,9 @@ public class ChatServiceImpl implements ChatService {
             }
         }
 
+
         //결과값 빌드
-        ScheduleVO scheduleVO = ScheduleVO.builder()
+        scheduleVOList.add(ScheduleVO.builder()
                 .chatroomUid(chatroomUid)
                 .userUid(userUid)
                 .mon(result[0])
@@ -343,18 +373,21 @@ public class ChatServiceImpl implements ChatService {
                 .fri(result[4])
                 .sat(result[5])
                 .sun(result[6])
-                .build();
-        return scheduleVO;
+                .build()
+        );
+
+        return scheduleVOList;
     }
 
     @Override
-    public ScheduleVO postSchedule(int chatroomUid, int userUid, ScheduleDTO scheduleDTO){
+    public List<ScheduleVO> postSchedule(int chatroomUid, int userUid, ScheduleDTO scheduleDTO){
         boolean[][] user1 = new boolean[8][7];
         boolean[][] user2 = new boolean[8][7];
         int[] dayList1 = new int[7];
         int[] dayList2 = new int [7];
         int[] result = new int[7];
         Arrays.fill(result, 0);
+        int k;
 
         //내 schedule 저장
         Optional<ChatroomUserTable> chatroomUserTableOptional = chatRoomUserRepository.findByChatroomUidAndUserUid(chatroomUid, userUid);
@@ -384,19 +417,47 @@ public class ChatServiceImpl implements ChatService {
 
         //상대 useruid의 값 받기
         List<ChatroomUserTable> chatroomUserTableList = chatRoomUserRepository.findAllByChatroomUid(chatroomUid);
-        for (int i = 0; i < 2; i++) {
-            if (chatroomUserTableList.get(i).getUserUid() != userUid) {
+        for (k = 0; k < 2; k++) {
+            if (chatroomUserTableList.get(k).getUserUid() != userUid) {
                 log.info("my uid : " + userUid);
-                log.info("other uid : " + chatroomUserTableList.get(i).getUserUid());
-                dayList2[0] = chatroomUserTableList.get(i).getMon();
-                dayList2[1] = chatroomUserTableList.get(i).getTues();
-                dayList2[2] = chatroomUserTableList.get(i).getWed();
-                dayList2[3] = chatroomUserTableList.get(i).getThur();
-                dayList2[4] = chatroomUserTableList.get(i).getFri();
-                dayList2[5] = chatroomUserTableList.get(i).getSat();
-                dayList2[6] = chatroomUserTableList.get(i).getSun();
+                log.info("other uid : " + chatroomUserTableList.get(k).getUserUid());
+                dayList2[0] = chatroomUserTableList.get(k).getMon();
+                dayList2[1] = chatroomUserTableList.get(k).getTues();
+                dayList2[2] = chatroomUserTableList.get(k).getWed();
+                dayList2[3] = chatroomUserTableList.get(k).getThur();
+                dayList2[4] = chatroomUserTableList.get(k).getFri();
+                dayList2[5] = chatroomUserTableList.get(k).getSat();
+                dayList2[6] = chatroomUserTableList.get(k).getSun();
+                break;
             }
         }
+
+        List<ScheduleVO> scheduleVOList = new ArrayList<>();
+        scheduleVOList.add(ScheduleVO.builder()
+                .chatroomUid(chatroomUid)
+                .userUid(userUid)
+                .mon(dayList1[0])
+                .tues(dayList1[1])
+                .wed(dayList1[2])
+                .thur(dayList1[3])
+                .fri(dayList1[4])
+                .sat(dayList1[5])
+                .sun(dayList1[6])
+                .build()
+        );
+
+        scheduleVOList.add(ScheduleVO.builder()
+                .chatroomUid(chatroomUid)
+                .userUid(chatroomUserTableList.get(k).getUserUid())
+                .mon(dayList2[0])
+                .tues(dayList2[1])
+                .wed(dayList2[2])
+                .thur(dayList2[3])
+                .fri(dayList2[4])
+                .sat(dayList2[5])
+                .sun(dayList2[6])
+                .build()
+        );
         System.out.println("dayList2 : ");
         for(int i=0;i<7;i++)
             System.out.print(" " + dayList2[i]);
@@ -514,7 +575,7 @@ public class ChatServiceImpl implements ChatService {
         }
 
         //결과값 빌드
-        ScheduleVO scheduleVO = ScheduleVO.builder()
+        scheduleVOList.add(ScheduleVO.builder()
                 .chatroomUid(chatroomUid)
                 .userUid(userUid)
                 .mon(result[0])
@@ -524,8 +585,10 @@ public class ChatServiceImpl implements ChatService {
                 .fri(result[4])
                 .sat(result[5])
                 .sun(result[6])
-                .build();
-        return scheduleVO;
+                .build()
+        );
+
+        return scheduleVOList;
     }
 
 
