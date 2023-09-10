@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 public class MyProfileVO {
-    private String studentID;
+    private String studentId;
     private String name;
     private String message;
     private String imgUrl;
