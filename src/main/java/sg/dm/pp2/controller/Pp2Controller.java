@@ -37,31 +37,31 @@ public class Pp2Controller {
     @Autowired
     private TokenAuthUtil tokenAuthUtil;
 
-    @PostMapping("/auth/signup/{kakao_uid}/{platform}")
+    @PostMapping("/auth/login/{platform_uid}/{sns_account_uid}")
     public JWTVO postSignUp(
             @RequestBody SignupTokenDTO signupTokenDTO,
-            @PathVariable("kakao_uid") String kakaoUid,
-            @PathVariable("platform") Integer platform
+            @PathVariable("sns_account_uid") long snsAccountUid,
+            @PathVariable("platform_uid") Integer platformUid
     ) {
         return userService.doSignUp(
-                kakaoUid,
+                snsAccountUid,
                 signupTokenDTO.getToken(),
-                platform
+                platformUid
         );
     }
 
-    @PostMapping("/auth/signin/{kakao_uid}/{platform}")
-    public JWTVO postSignIn(
-            @RequestBody SignupTokenDTO signupTokenDTO,
-            @PathVariable("kakao_uid") String kakaoUid,
-            @PathVariable("platform") Integer platform
-    ) {
-        return userService.doSignIn(
-                kakaoUid,
-                signupTokenDTO.getToken(),
-                platform
-        );
-    }
+//    @PostMapping("/auth/signin/{sns_account_uid}/{platform_uid}")
+//    public JWTVO postSignIn(
+//            @RequestBody SignupTokenDTO signupTokenDTO,
+//            @PathVariable("sns_account_uid") Integer snsAccountUid,
+//            @PathVariable("platform_uid") Integer platformUid
+//    ) {
+//        return userService.doSignIn(
+//                snsAccountUid,
+//                signupTokenDTO.getToken(),
+//                platformUid
+//        );
+//    }
 
     @GetMapping("/public/text/{text_uid}")
     public TextTableVO getText(@PathVariable(value = "text_Uid") String textUid) {

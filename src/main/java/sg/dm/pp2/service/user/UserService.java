@@ -8,16 +8,16 @@ import java.util.List;
 
 public interface UserService {
     JWTVO doSignUp(
-            String snsAccountUid,
+            long snsAccountUid,
             String token,
-            Integer platform
+            Integer platformUid
     );
 
-    JWTVO doSignIn(
-            String snsAccountUid,
-            String token,
-            Integer platform
-    );
+//    JWTVO doSignIn(
+//            Integer snsAccountUid,
+//            String token,
+//            Integer platformUid
+//    );
 
     void userDeactivate(int userUid);
 

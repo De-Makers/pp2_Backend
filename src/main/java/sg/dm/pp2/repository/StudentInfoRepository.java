@@ -28,7 +28,7 @@ public interface StudentInfoRepository extends JpaRepository<StudentInfo, Intege
     public void updateStudentInfoByUserUid(
             Integer userUid,
             String studentId,
-            Integer studentIdYear,
+            String studentIdYear,
             String studentIdPivot,
             String name,
             String message,

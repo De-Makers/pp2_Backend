@@ -26,7 +26,7 @@ public class StudentInfo {
     private String studentId;
 
     @Column(nullable = true)
-    private Integer studentIdYear;
+    private String studentIdYear;
 
     @Column(nullable = true)
     private String studentIdPivot;

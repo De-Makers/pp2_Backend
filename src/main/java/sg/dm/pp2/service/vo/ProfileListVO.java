@@ -15,8 +15,11 @@ public class ProfileListVO {
     private Integer userUid;
     private String name;
     private String studentId;
-    private Integer studentIdYear;
+    private String studentIdYear;
     private String studentIdPivot;
     private String message;
     private String imgUrl;
+    private int chatroomUid;
+    private Boolean readCheck;
+    private String lastMessage;
 }

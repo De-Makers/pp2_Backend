@@ -23,8 +23,5 @@ public class SnsLogin {
     int platformUid;
 
     @Column
-    String snsAccountUid;
-
-    @Column
-    String token;
+    long snsAccountUid;
 }

@@ -11,5 +11,5 @@ import java.util.Optional;
 public interface SnsLoginRepository extends JpaRepository<SnsLogin, Long> {
     Optional<SnsLogin> findByUserUid(Integer userUid);
 
-    Optional<SnsLogin> findBySnsAccountUid(String snsAccountUid);
+    Optional<SnsLogin> findBySnsAccountUidAndPlatformUid(long snsAccountUid, int platformUid);
 }
