@@ -43,9 +43,11 @@ public class ChatServiceImpl implements ChatService {
     public String saveMessageAndReturnSessionId(ChatMessageDTO message){
         Optional<ChatroomSessionTable> chatroomSessionTableOptional = chatRoomSessionRepository.findByChatroomUid(message.getRoomUid());
         if (chatroomSessionTableOptional.isPresent()) {
+            log.info("isPresnt");
             String contentToTransfer = "";
             switch (message.getTypeUid()){
                 case 1:
+                    log.info("message type1");
                     contentToTransfer = message.getMessage();
                     break;
                 case 2:
@@ -108,6 +110,7 @@ public class ChatServiceImpl implements ChatService {
             return sessionId;
         } else {
             //session_id로 채팅방 uid를 찾지 못함
+            log.info("CHATROOM_NOT_FOUND");
             throw new NotFoundException("CHATROOM_NOT_FOUND");
         }
     }
