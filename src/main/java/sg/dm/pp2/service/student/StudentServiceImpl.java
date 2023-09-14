@@ -62,51 +62,82 @@ public class StudentServiceImpl implements StudentService {
         String studentIdPivot = yearAndPivot.getPivot();
         String studentIdYear = yearAndPivot.getYear();
 
-        //-----------------------------------------여기서부터 채팅방
-        int univUid = studentInfo.getUnivUid();
-        List<StudentInfo> studentInfoList = studentInfoRepository.findAllByUnivUidAndStudentIdPivot(univUid, studentIdPivot);
-        long pivotCount = studentInfoList.stream().count();
-        log.info("pivotCount : " + pivotCount);
+        if(studentInfo.getStudentId() == null) { //처음 프로필을 만들 때만
+            //-----------------------------------------여기서부터 채팅방
+            int univUid = studentInfo.getUnivUid();
+            List<StudentInfo> studentInfoList = studentInfoRepository.findAllByUnivUidAndStudentIdPivot(univUid, studentIdPivot);
+            long pivotCount = studentInfoList.stream().count();
+            log.info("pivotCount : " + pivotCount);
 
-        //pivot이 같은 사람이 있으면
-        if(pivotCount > 0) {
-            //같은 사람들 수만큼
-            for(int i=0;i<pivotCount;i++) {
-                if (userUid != studentInfoList.get(i).getUserUid()) {
-                    //채팅방 하나 만들고
-                    ChatRoomDTO chatRoomDTO = ChatRoomDTO.create();
+            //pivot이 같은 사람이 있으면
+            if (pivotCount > 0) {
+                //같은 사람들 수만큼
+                for (int i = 0; i < pivotCount; i++) {
+                    if (userUid != studentInfoList.get(i).getUserUid()) {
+                        //채팅방 하나 만들고
+                        ChatRoomDTO chatRoomDTO = ChatRoomDTO.create();
 
-                    //session table db에 채팅방 저장
-                    ChatroomSessionTable chatroomSessionTable = ChatroomSessionTable.builder()
-                            .sessionId(chatRoomDTO.getRoomId())
-                            .build();
-                    ChatroomSessionTable savedChatRoomSession = chatRoomSessionRepository.save(chatroomSessionTable);
+                        //session table db에 채팅방 저장
+                        ChatroomSessionTable chatroomSessionTable = ChatroomSessionTable.builder()
+                                .sessionId(chatRoomDTO.getRoomId())
+                                .build();
+                        ChatroomSessionTable savedChatRoomSession = chatRoomSessionRepository.save(chatroomSessionTable);
 
-                    //내 유저아이디랑 채팅방 id db에 저장
-                    ChatroomUserTable chatroomUserTable1 = ChatroomUserTable.builder()
-                            .userUid(userUid)
-                            .chatroomUid(savedChatRoomSession.getChatroomUid())
-                            .readCheck(true)
-                            .build();
-                    chatRoomUserRepository.save(chatroomUserTable1);
+                        //내 유저아이디랑 채팅방 id db에 저장
+                        ChatroomUserTable chatroomUserTable1 = ChatroomUserTable.builder()
+                                .userUid(userUid)
+                                .chatroomUid(savedChatRoomSession.getChatroomUid())
+                                .readCheck(true)
+                                .build();
+                        chatRoomUserRepository.save(chatroomUserTable1);
 
-                    //상대 유저아이디랑 채팅방 id db에 저장
-                    ChatroomUserTable chatroomUserTable2 = ChatroomUserTable.builder()
-                            .userUid(studentInfoList.get(i).getUserUid())
-                            .chatroomUid(savedChatRoomSession.getChatroomUid())
-                            .readCheck(true)
-                            .build();
-                    chatRoomUserRepository.save(chatroomUserTable2);
+                        //상대 유저아이디랑 채팅방 id db에 저장
+                        ChatroomUserTable chatroomUserTable2 = ChatroomUserTable.builder()
+                                .userUid(studentInfoList.get(i).getUserUid())
+                                .chatroomUid(savedChatRoomSession.getChatroomUid())
+                                .readCheck(true)
+                                .build();
+                        chatRoomUserRepository.save(chatroomUserTable2);
+                    }
                 }
             }
+            //----------------------------------------------------------
+            //reg_state to 2
+            Optional<PpRegisterState> ppRegisterStateOptional = ppRegisterStateRepository.findByUserUid(userUid);
+            PpRegisterState ppRegisterState;
+            if (ppRegisterStateOptional.isPresent()) {
+                ppRegisterState = ppRegisterStateOptional.get();
+                ppRegisterState.setStateId(2);
+            } else {
+                ppRegisterState = PpRegisterState.builder()
+                        .userUid(userUid)
+                        .stateId(2)
+                        .build();
+            }
+            ppRegisterStateRepository.save(ppRegisterState);
+
+            //increase member_count in rank table
+            Optional<PpRank> ppRankOptional = ppRankRepository.findByUnivUidAndStudentIdPivot(univUid, studentIdPivot);
+            PpRank ppRank;
+            if (ppRankOptional.isPresent()) {
+                ppRank = ppRankOptional.get();
+                ppRank.setMemberCount(ppRank.getMemberCount() + 1);
+            } else {
+                ppRank = PpRank.builder()
+                        .univUid(univUid)
+                        .studentIdPivot(studentIdPivot)
+                        .memberCount(1)
+                        .build();
+            }
+            ppRankRepository.save(ppRank);
         }
-        //----------------------------------------------------------
+
 
         //student 정보 저장
         if(url == null){
             url = studentInfo.getProfileImageUrl();
         }
-        if(studentInfo.getStudentId() != null){
+        if(studentInfo.getStudentId() != null && studentId != null){
             throw new NotAcceptableException("CANNOT_CHANGE_STUDENT_ID");
         }
         studentInfoRepository.updateStudentInfoByUserUid(
@@ -119,36 +150,7 @@ public class StudentServiceImpl implements StudentService {
                 url = url
         );
 
-        //reg_state to 2
-        Optional<PpRegisterState> ppRegisterStateOptional = ppRegisterStateRepository.findByUserUid(userUid);
-        PpRegisterState ppRegisterState;
-        if(ppRegisterStateOptional.isPresent()){
-            ppRegisterState = ppRegisterStateOptional.get();
-            ppRegisterState.setStateId(2);
-        }
-        else{
-            ppRegisterState = PpRegisterState.builder()
-                    .userUid(userUid)
-                    .stateId(2)
-                    .build();
-        }
-        ppRegisterStateRepository.save(ppRegisterState);
 
-        //increase member_count in rank table
-        Optional<PpRank> ppRankOptional = ppRankRepository.findByUnivUidAndStudentIdPivot(univUid, studentIdPivot);
-        PpRank ppRank;
-        if(ppRankOptional.isPresent()){
-            ppRank = ppRankOptional.get();
-            ppRank.setMemberCount(ppRank.getMemberCount()+1);
-        }
-        else{
-            ppRank = PpRank.builder()
-                    .univUid(univUid)
-                    .studentIdPivot(studentIdPivot)
-                    .memberCount(1)
-                    .build();
-        }
-        ppRankRepository.save(ppRank);
 
     }
 
