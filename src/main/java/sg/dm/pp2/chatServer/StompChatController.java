@@ -6,6 +6,8 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import sg.dm.pp2.chatServer.DTO.ChatMessageDTO;
+import sg.dm.pp2.chatServer.VO.MessageSessionVO;
+import sg.dm.pp2.chatServer.VO.MessageVO;
 
 @Controller
 @RequiredArgsConstructor
@@ -26,8 +28,16 @@ public class StompChatController {
 
     @MessageMapping(value = "/chat/message")
     public void messageText(ChatMessageDTO message){
-        String sessionId = chatService.saveMessageAndReturnSessionId(message);
-        template.convertAndSend("/sub/chat/room/" + sessionId, message);
+        MessageSessionVO messageSessionVO = chatService.saveMessageAndReturnSessionId(message);
+        String sessionId = messageSessionVO.getSessionId();
+        MessageVO messageVO = MessageVO.builder()
+                .chatUid(messageSessionVO.getChatUid())
+                .writerUid(messageSessionVO.getWriterUid())
+                .message(messageSessionVO.getMessage())
+                .typeUid(messageSessionVO.getTypeUid())
+                .registeredDatetime(messageSessionVO.getRegisteredDatetime())
+                .build();
+        template.convertAndSend("/sub/chat/room/" + sessionId, messageVO);
     }
 
 //    @MessageMapping(value = "/chat/message/image")

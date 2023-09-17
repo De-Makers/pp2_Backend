@@ -63,8 +63,16 @@ public class ChatRoomController {
     ) throws IllegalStateException, IOException {
         String url = s3Upload.upload(multipartFile);
         message.setMessage(url);
-        String sessionId = chatService.saveMessageAndReturnSessionId(message);
-        template.convertAndSend("/sub/chat/room/" + sessionId, message);
+        MessageSessionVO messageSessionVO = chatService.saveMessageAndReturnSessionId(message);
+        String sessionId = messageSessionVO.getSessionId();
+        MessageVO messageVO = MessageVO.builder()
+                .chatUid(messageSessionVO.getChatUid())
+                .writerUid(messageSessionVO.getWriterUid())
+                .message(messageSessionVO.getMessage())
+                .typeUid(messageSessionVO.getTypeUid())
+                .registeredDatetime(messageSessionVO.getRegisteredDatetime())
+                .build();
+        template.convertAndSend("/sub/chat/room/" + sessionId, messageVO);
     }
 
     @PostMapping("/pp/chat/{chatroomUid}/schedule/init")
@@ -87,6 +95,11 @@ public class ChatRoomController {
         return chatService.postSchedule(chatroomUid, userUid, scheduleDTO);
     }
 
+    //room_session_id 알아내는 controller
+    @GetMapping("/chat/room/{room_uid}")
+    public ChatSessionVO getChatRoomSessionUid(@PathVariable(value = "room_uid") int roomUid){
+        return chatService.getSessionId(roomUid);
+    }
 
 
 
@@ -97,9 +110,5 @@ public class ChatRoomController {
         return chatService.createRoomAndGetRoomId();
 //        return ChatRoomDTO.create(roomName);
     }
-    //room_session_id 알아내는 test controller
-    @GetMapping("/chat/test/{room_uid}")
-    public String getChatRoomSessionUid(@PathVariable(value = "room_uid") int roomUid){
-        return chatService.getSessionId(roomUid);
-    }
+
 }
