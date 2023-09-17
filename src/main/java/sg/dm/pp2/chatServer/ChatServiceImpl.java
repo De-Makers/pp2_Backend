@@ -40,8 +40,8 @@ public class ChatServiceImpl implements ChatService {
     private StudentInfoRepository studentInfoRepository;
 
     @Override
-    public String saveMessageAndReturnSessionId(ChatMessageDTO message){
-        Optional<ChatroomSessionTable> chatroomSessionTableOptional = chatRoomSessionRepository.findByChatroomUid(message.getRoomUid());
+    public MessageSessionVO saveMessageAndReturnSessionId(ChatMessageDTO message){
+        Optional<ChatroomSessionTable> chatroomSessionTableOptional = chatRoomSessionRepository.findByChatroomUid(message.getChatroomUid());
         if (chatroomSessionTableOptional.isPresent()) {
             log.info("isPresnt");
             String contentToTransfer = "";
@@ -62,6 +62,7 @@ public class ChatServiceImpl implements ChatService {
 //                    } catch (IOException e) {
 //                        throw new RuntimeException(e);
 //                    }
+                    log.info("message type2");
                     contentToTransfer = message.getMessage();
                     break;
                 case 3:
@@ -82,18 +83,18 @@ public class ChatServiceImpl implements ChatService {
             message.setMessage(contentToTransfer);
             //메세지 저장
             ChatTable chatTable = ChatTable.builder()
-                    .chatroomUid(message.getRoomUid())
+                    .chatroomUid(message.getChatroomUid())
                     .userUid(message.getWriterUid())
                     .message(contentToTransfer)
                     .typeUid(message.getTypeUid())
                     .registeredDatetime(LocalDateTime.now())
                     .build();
-            chatRepository.save(chatTable);
+            ChatTable savedChatTable = chatRepository.save(chatTable);
 
             //나를 제외한 상대방 read_check false로 set
-            List<ChatroomUserTable> chatroomUserTableList = chatRoomUserRepository.findAllByChatroomUid(message.getRoomUid());
+            List<ChatroomUserTable> chatroomUserTableList = chatRoomUserRepository.findAllByChatroomUid(message.getChatroomUid());
             long chatCount = chatroomUserTableList.stream().count();
-            log.info("roomuid : " + message.getRoomUid());
+            log.info("roomuid : " + message.getChatroomUid());
             log.info("chatCount : " + chatCount);
             if (chatCount > 0) {
                 for (int i = 0; i < chatCount; i++) {
@@ -107,7 +108,18 @@ public class ChatServiceImpl implements ChatService {
 
             //chatroom의 session_id 리턴
             String sessionId = chatroomSessionTableOptional.get().getSessionId();
-            return sessionId;
+
+            MessageSessionVO messageSessionVO = MessageSessionVO.builder()
+                    .sessionId(sessionId)
+                    .chatUid(savedChatTable.getChatUid())
+                    .writerUid(savedChatTable.getUserUid())
+                    .message(savedChatTable.getMessage())
+                    .typeUid(savedChatTable.getTypeUid())
+                    .registeredDatetime(savedChatTable.getRegisteredDatetime())
+                    .build();
+
+
+            return messageSessionVO;
         } else {
             //session_id로 채팅방 uid를 찾지 못함
             log.info("CHATROOM_NOT_FOUND");
@@ -594,18 +606,22 @@ public class ChatServiceImpl implements ChatService {
         return scheduleVOList;
     }
 
-
-    //TODO : ---------------------TEST-----------------------------
-    //for test
     @Override
-    public String getSessionId(int roomUid) {
+    public ChatSessionVO getSessionId(int roomUid) {
         Optional<ChatroomSessionTable> chatroomSessionTableOptional = chatRoomSessionRepository.findByChatroomUid(roomUid);
         if (chatroomSessionTableOptional.isPresent()) {
-            return chatroomSessionTableOptional.get().getSessionId();
+            ChatSessionVO chatSessionVO = ChatSessionVO.builder()
+                    .sessionId(chatroomSessionTableOptional.get().getSessionId())
+                    .build();
+            return chatSessionVO;
         } else {
             throw new NotFoundException("CHATROOM_NOT_FOUND");
         }
     }
+
+
+    //TODO : ---------------------TEST-----------------------------
+
 
     //for test
     @Override

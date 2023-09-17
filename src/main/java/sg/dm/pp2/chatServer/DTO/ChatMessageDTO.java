@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class ChatMessageDTO {
-    private int roomUid;
+    private int chatroomUid;
     private int writerUid;
     private int typeUid;
     private String message;

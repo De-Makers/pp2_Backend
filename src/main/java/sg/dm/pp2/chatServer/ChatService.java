@@ -8,7 +8,7 @@ import sg.dm.pp2.chatServer.VO.*;
 import java.util.List;
 
 public interface ChatService {
-    String saveMessageAndReturnSessionId(ChatMessageDTO message);
+    MessageSessionVO saveMessageAndReturnSessionId(ChatMessageDTO message);
 
     List<ChatRoomVO> getChatRoomUidList(int userUid);
 
@@ -24,10 +24,10 @@ public interface ChatService {
 
     List<ScheduleVO> postSchedule(int chatroomUid, int userUid, ScheduleDTO scheduleDTO);
 
-
+    ChatSessionVO getSessionId(int rooomUid);
 
     //TODO : -------------FOR TEST----------
-    String getSessionId(int rooomUid);
+
 
     int createRoomAndGetRoomId();
 }
