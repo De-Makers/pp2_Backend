@@ -56,9 +56,10 @@ public class UserServiceImpl implements UserService{
     public JWTVO doSignUp(
             long snsAccountUid,
             String token,
+            String fcmToken,
             Integer platformUid
     ) {
-        Integer userUid = checkInsertSnsLoginAndUpdateTokenAndReturnUserUid(snsAccountUid, token, platformUid);
+        Integer userUid = checkInsertSnsLoginAndUpdateTokenAndReturnUserUid(snsAccountUid, token, fcmToken, platformUid);
         if(userUid == -1){
             throw new NotFoundException("CANNOT_SIGNUP");
         }
@@ -130,7 +131,7 @@ public class UserServiceImpl implements UserService{
 //        throw new NotFoundException("USER_NOT_FOUND");
 //    }
 
-    private Integer checkInsertSnsLoginAndUpdateTokenAndReturnUserUid(long snsAccountUid, String token, Integer platformUid) {
+    private Integer checkInsertSnsLoginAndUpdateTokenAndReturnUserUid(long snsAccountUid, String token, String fcmToken, Integer platformUid) {
         //외부 api에 get 요청
         String sendToken = "Bearer " + token;
         log.info("sendToken : " + sendToken);
@@ -161,6 +162,15 @@ public class UserServiceImpl implements UserService{
                     Optional<SnsLogin> snsLoginOptional = snsLoginRepository.findBySnsAccountUidAndPlatformUid(snsAccountUid, platformUid);
                     if(snsLoginOptional.isPresent()){ //이미 회원가입이 된 상태면(로그인이면)
                         int userUid = snsLoginOptional.get().getUserUid();
+                        Optional<UserInfo> userInfoOptional = userInfoRepository.findByUserUid(userUid);
+                        if(userInfoOptional.isPresent()){
+                            UserInfo userInfo = userInfoOptional.get();
+                            userInfo.setFcmToken(fcmToken);
+                            userInfoRepository.save(userInfo);
+                        }
+                        else{
+                            throw new NotFoundException("USER_NOT_FOUND");
+                        }
                         return userUid;
                     }
                     else{ //회원가입이면
@@ -172,7 +182,7 @@ public class UserServiceImpl implements UserService{
                         int userUid = savedLogin.getUserUid();
 
                         //user_info와 student_info에 유저 생성
-                        insertNewUserInfoStudentInfo(userUid);
+                        insertNewUserInfoStudentInfo(userUid, fcmToken);
 
                         //reg_state to 0
                         Optional<PpRegisterState> ppRegisterStateOptional = ppRegisterStateRepository.findByUserUid(userUid);
@@ -205,11 +215,12 @@ public class UserServiceImpl implements UserService{
 
     }
 
-    private void insertNewUserInfoStudentInfo(Integer userUid) {
+    private void insertNewUserInfoStudentInfo(Integer userUid, String fcmToken) {
         UserInfo newUserInfo = new UserInfo();
         StudentInfo newStudentInfo = new StudentInfo();
         newUserInfo.setUserUid(userUid);
         newUserInfo.setHitCount(0);
+        newUserInfo.setFcmToken(fcmToken);
         newUserInfo.setCreatedDatetime(LocalDateTime.now());
         newStudentInfo.setUserUid(userUid) ;
         System.out.print(newStudentInfo.toString());

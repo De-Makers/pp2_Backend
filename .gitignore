@@ -6,7 +6,7 @@ build/
 !**/src/test/**/build/
 application.properties
 src/main/resources/application.properties
-src/main/resources/firebase/demakers-pp2-firebase-adminsdk-xg59z-cb040f4331.json
+src/main/resources/firebase/*.json
 .env.dev
 dockerDB/
 
