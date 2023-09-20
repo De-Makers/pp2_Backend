@@ -9,4 +9,5 @@ import lombok.Setter;
 @NoArgsConstructor
 public class SignupTokenDTO {
     private String token;
+    private String fcmToken;
 }

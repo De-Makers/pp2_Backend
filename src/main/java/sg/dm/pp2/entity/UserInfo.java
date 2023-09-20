@@ -34,4 +34,7 @@ public class UserInfo {
 
     @Column(nullable = true)
     private LocalDateTime createdDatetime;
+
+    @Column(nullable = true)
+    private String fcmToken;
 }

@@ -10,6 +10,7 @@ public interface UserService {
     JWTVO doSignUp(
             long snsAccountUid,
             String token,
+            String fcmToken,
             Integer platformUid
     );
 

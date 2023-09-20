@@ -46,6 +46,7 @@ public class Pp2Controller {
         return userService.doSignUp(
                 snsAccountUid,
                 signupTokenDTO.getToken(),
+                signupTokenDTO.getFcmToken(),
                 platformUid
         );
     }
